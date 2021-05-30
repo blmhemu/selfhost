@@ -6,8 +6,12 @@
   roles:
     - bootstrap
 
+- name: Install podman
+  hosts: nomad_instances
+  roles:
+    - ansible_podman
+
 - name: Install docker
-  become: true
   hosts: nomad_instances
   roles:
     - ansible_docker

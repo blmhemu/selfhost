@@ -58,35 +58,8 @@
   apt:
     autoclean: yes
 
-- name: Add gpg key of kubic project (for podman)
-  become: true
-  apt_key:
-    url: https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_{{ ansible_distribution_version }}/Release.key
-    state: present
-
-- name: Add kubic project repo (for podman)
-  become: true
-  apt_repository:
-    repo: deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ ansible_distribution_version }}/ /
-    filename: devel:kubic:libcontainers:stable
-    state: present
-    update_cache: yes
-
 - name: Install useful packages
   become: true
   apt:
     name: "{{ packages }}"
     state: present
-
-- name: Enable podman remote for this user
-  systemd:
-    name: podman.socket
-    state: started
-    enabled: yes
-    daemon-reload: yes
-    scope: user
-
-- name: Ensure lingering enabled for this user
-  command:
-    cmd: loginctl enable-linger {{ ansible_user }}
-    creates: /var/lib/systemd/linger/{{ ansible_user }}
