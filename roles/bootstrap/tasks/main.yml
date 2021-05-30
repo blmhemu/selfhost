@@ -1,0 +1,97 @@
+---
+# tasks file for bootstrap
+
+- name: Enable cgroups v2 in boot options
+  become: true
+  replace:
+    path: /boot/firmware/cmdline.txt
+    regexp: '^([\w](?!.*\b{{ item }}\b).*)$'
+    replace: '\1 {{ item }}'
+  with_items:
+  - "systemd.unified_cgroup_hierarchy=1"
+  register: cgroup_status
+
+- name: Set timezone to Asia/Kolkata
+  timezone:
+    name: Asia/Kolkata
+
+- name: Ensure US locale exists
+  locale_gen:
+    name: en_US.UTF-8
+    state: present
+
+- name: Update apt-cache and do dist upgrade
+  become: true
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+    upgrade: dist
+
+- name: Reboot if required
+  stat:
+    path: /var/run/reboot-required
+  register: reboot_required_file
+
+- name: Ensure hostname is properly set
+  become: true
+  hostname:
+    name: "{{ inventory_hostname }}"
+  register: hostname_status
+  when: ansible_hostname != inventory_hostname
+
+- name: Reboot if required
+  become: true
+  reboot:
+  when: >
+    reboot_required_file.stat.exists == true or
+    hostname_status.changed or
+    cgroup_status.results[0].changed == true
+
+- name: Clean unused deps and config
+  become: true
+  apt:
+    autoremove: yes
+    purge: yes
+
+- name: Clean unused packages from the cache
+  become: true
+  apt:
+    autoclean: yes
+
+- name: Add gpg key of kubic project (for podman)
+  become: true
+  apt_key:
+    url: https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_{{ ansible_distribution_version }}/Release.key
+    state: present
+
+- name: Add kubic project repo (for podman)
+  become: true
+  apt_repository:
+    repo: deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ ansible_distribution_version }}/ /
+    filename: devel:kubic:libcontainers:stable
+    state: present
+
+- name: Update apt-cache and do dist upgrade
+  become: true
+  apt:
+    update_cache: yes
+    upgrade: dist
+
+- name: Install useful packages
+  become: true
+  apt:
+    name: "{{ packages }}"
+    state: present
+
+- name: Enable podman remote for this user
+  systemd:
+    name: podman.socket
+    state: started
+    enabled: yes
+    daemon-reload: yes
+    scope: user
+
+- name: Ensure lingering enabled for this user
+  command:
+    cmd: loginctl enable-linger {{ ansible_user }}
+    creates: /var/lib/systemd/linger/{{ ansible_user }}

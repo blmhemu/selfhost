@@ -1,0 +1,8 @@
+[rpi]
+rpi0
+
+[consul_instances]
+rpi0 consul_node_role=bootstrap consul_client_address=0.0.0.0
+
+[nomad_instances]
+rpi0 nomad_node_role=both nomad_podman_enable=true nomad_podman_version=0.2.0
