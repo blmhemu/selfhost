@@ -5,6 +5,9 @@
 For password-less ansible setup do the following
 
 ```
+# SSH into the machine and set a strong password
+ssh user@host
+passwd
 # Generate ssh key pair. Skip if already present.
 ssh-keygen -b 2048 -t rsa
 # Copy it to the host. Generally the location is .ssh/id_rsa.pub

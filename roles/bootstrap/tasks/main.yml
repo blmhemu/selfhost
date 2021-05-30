@@ -12,10 +12,12 @@
   register: cgroup_status
 
 - name: Set timezone to Asia/Kolkata
+  become: true
   timezone:
     name: Asia/Kolkata
 
 - name: Ensure US locale exists
+  become: true
   locale_gen:
     name: en_US.UTF-8
     state: present
@@ -39,6 +41,7 @@
   register: hostname_status
   when: ansible_hostname != inventory_hostname
 
+# TODO: Check if this can be done in a handler
 - name: Reboot if required
   become: true
   reboot:
@@ -47,15 +50,11 @@
     hostname_status.changed or
     cgroup_status.results[0].changed == true
 
-- name: Clean unused deps and config
+- name: Clean unused items
   become: true
   apt:
     autoremove: yes
     purge: yes
-
-- name: Clean unused packages from the cache
-  become: true
-  apt:
     autoclean: yes
 
 - name: Install useful packages
