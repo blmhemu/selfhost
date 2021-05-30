@@ -9,7 +9,7 @@
     replace: '\1 {{ item }}'
   with_items:
   - "systemd.unified_cgroup_hierarchy=1"
-  register: cgroup_status
+  register: cgroupv2_changed
 
 - name: Set timezone to Asia/Kolkata
   become: true
@@ -48,7 +48,7 @@
   when: >
     reboot_required_file.stat.exists == true or
     hostname_status.changed or
-    cgroup_status.results[0].changed == true
+    cgroupv2_changed.results[0].changed == true
 
 - name: Clean unused items
   become: true
