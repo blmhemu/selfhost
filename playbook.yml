@@ -6,23 +6,29 @@
   roles:
     - bootstrap
 
-# - name: Install consul
-#   become: true
-#   hosts: consul_instances
-#   roles:
-#     - ansible_consul
+- name: Install docker
+  become: true
+  hosts: nomad_instances
+  roles:
+    - ansible_docker
 
-# - name: Install nomad
-#   become: true
-#   hosts: nomad_instances
-#   vars:
-#     nomad_plugins:
-#       nomad-driver-podman:
-#         config:
-#           socket_path: unix://run/user/1000/podman/podman.sock
-#           volumes:
-#             enabled: true
-#             selinuxlabel: z
-#           recover_stopped: true
-#   roles:
-#     - ansible_nomad
+- name: Install consul
+  become: true
+  hosts: consul_instances
+  roles:
+    - ansible_consul
+
+- name: Install nomad
+  become: true
+  hosts: nomad_instances
+  vars:
+    nomad_plugins:
+      nomad-driver-podman:
+        config:
+          socket_path: unix://run/user/1000/podman/podman.sock
+          volumes:
+            enabled: true
+            selinuxlabel: z
+          recover_stopped: true
+  roles:
+    - ansible_nomad

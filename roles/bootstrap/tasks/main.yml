@@ -70,12 +70,7 @@
     repo: deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ ansible_distribution_version }}/ /
     filename: devel:kubic:libcontainers:stable
     state: present
-
-- name: Update apt-cache and do dist upgrade
-  become: true
-  apt:
     update_cache: yes
-    upgrade: dist
 
 - name: Install useful packages
   become: true
