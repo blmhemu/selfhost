@@ -15,7 +15,7 @@
     state: present
     update_cache: yes
 
-- name: Install useful packages
+- name: Install podman
   become: true
   apt:
     name: podman
