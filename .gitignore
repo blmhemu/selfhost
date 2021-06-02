@@ -1,3 +1,4 @@
 roles/ansible_consul
 roles/ansible_nomad
 roles/ansible_docker
+roles/ansible_tailscale
