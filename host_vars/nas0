@@ -1,6 +1,6 @@
 # Host variables for nas0
 ---
 ansible_host: 192.168.0.101
-consul_node_role=client
-nomad_node_role=client
-nomad_docker_enable=true
+consul_node_role: client
+nomad_node_role: client
+nomad_docker_enable: true
