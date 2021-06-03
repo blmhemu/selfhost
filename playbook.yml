@@ -1,38 +1,53 @@
 ---
 # Playbook
 
-- name: Ready the pi(s)
-  hosts: rpi
+- name: Ready the nodes
+  hosts: all
   roles:
     - bootstrap
 
-- name: Install podman
-  hosts: nomad_instances
-  roles:
-    - ansible_podman
+- name: Install tailscale
+  hosts: all
+  tasks:
+    - include_role:
+        name: ansible_tailscale
+      when: ansible_tailscale0 is not defined
 
-- name: Install docker
-  hosts: nomad_instances
-  roles:
-    - ansible_docker
+# - name: Install podman
+#   hosts: nomad_instances
+#   roles:
+#     - ansible_podman
 
-- name: Install consul
-  become: true
-  hosts: consul_instances
-  roles:
-    - ansible_consul
+# - name: Install docker
+#   hosts: nomad_instances
+#   roles:
+#     - ansible_docker
 
-- name: Install nomad
-  become: true
-  hosts: nomad_instances
-  vars:
-    nomad_plugins:
-      nomad-driver-podman:
-        config:
-          socket_path: unix://run/user/1000/podman/podman.sock
-          volumes:
-            enabled: true
-            selinuxlabel: z
-          recover_stopped: true
-  roles:
-    - ansible_nomad
+# - name: Install consul
+#   become: true
+#   hosts: consul_instances
+#   roles:
+#     - role: ansible_consul
+#       vars:
+#         consul_iface: tailscale0
+#         consul_client_address: "{{ansible_tailscale0.ipv4.address}}"
+
+# - name: Install nomad
+#   become: true
+#   hosts: nomad_instances
+  # vars:
+  #   nomad_plugins:
+  #     nomad-driver-podman:
+  #       config:
+  #         socket_path: unix://run/user/1000/podman/podman.sock
+  #         volumes:
+  #           enabled: true
+  #           selinuxlabel: z
+  #         recover_stopped: true
+  # roles:
+  #   - role: ansible_nomad
+  #     vars:
+  #       nomad_iface: "tailscale0"
+  #       nomad_network_interface: "{{ansible_tailscale0.ipv4.address}}"
+        # nomad_servers:
+        #   - "{{ansible_tailscale0.ipv4.address}}"
