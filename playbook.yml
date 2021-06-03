@@ -1,15 +1,15 @@
 ---
 # Playbook
 
-# - name: Ready the nodes
-#   hosts: all
-#   roles:
-#     - bootstrap
+- name: Ready the nodes
+  hosts: all
+  roles:
+    - bootstrap
 
 - name: Install tailscale
   hosts: all
   vars:
-    tailscale_auth_key: |
+    tailscale_auth_key: !vault |
       $ANSIBLE_VAULT;1.1;AES256
       37623032323963306134626461323661396436366664323136333438353335653665363837316261
       3438623235383433623931373134363037616133633263650a336338653034346562383235393136
