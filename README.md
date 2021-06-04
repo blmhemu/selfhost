@@ -4,7 +4,7 @@
 
 For password-less ansible setup do the following
 
-```
+```shell
 ## Setup your server
 # SSH into the machine and perform initial setup
 ssh user@host
@@ -26,7 +26,7 @@ cat ~/.ssh/id_rsa.pub | ssh user@host "mkdir -p ~/.ssh && chmod 700 ~/.ssh && ca
 
 ## How to run this playbook
 
-```
+```shell
 # Get a reusable tailscale auth key at https://login.tailscale.com/admin/settings/authkeys
 # Encrypt the key using ansible vault. I prefer password based auth. You can use a password file with proper permissions and add it to .gitignore. Many shells log the history. Remove the command from shell history (.zsh_history | .bash_history)
 ansible-vault encrypt_string --ask-vault-pass 'tskey-xxxxxxxxxxxxxxxx' --name 'tailscale_auth_key'
