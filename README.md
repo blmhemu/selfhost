@@ -24,18 +24,18 @@ ssh-copy-id -i ~/.ssh/mykey user@host
 cat ~/.ssh/id_rsa.pub | ssh user@host "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >>  ~/.ssh/authorized_keys"
 ```
 
-## How to run this playbook
+## Run the playbook
 
 ```shell
 # Get a reusable tailscale auth key at https://login.tailscale.com/admin/settings/authkeys
-# Encrypt the key using ansible vault. Many shells log history
-# Remove the line from shell history (.zsh_history | .bash_history) after usage
+# Encrypt the key using ansible vault
+# Remember to remove the line from shell history (.zsh_history | .bash_history)
 ansible-vault encrypt_string --ask-vault-pass 'tskey-xxxxxxxxxxxxxxxx' --name 'tailscale_auth_key'
-# Copy the output of the above command to the vars section of Install Tailscale part of playbook.yml
+# Replace vars section of `Install Tailscale` part of playbook.yml with the output of above command
 # tailscale_auth_key: !vault |
-#          $ANSIBLE_VAULT;1.1;AES256
-#          xxxxxxxxxxxxxxxxxxxxxxxxxxx
-#          xxxxxxxxxxxxxxxxxxxxxxxxxxx
+#   $ANSIBLE_VAULT;1.1;AES256
+#   xxxxxxxxxxxxxxxxxxxxxxxxxxx
+#   xxxxxxxxxxxxxxxxxxxxxxxxxxx
 # Run the playbook with below command. Enter vault password when prompted.
 ansible-playbook --ask-vault-pass playbook.yml
 ```
