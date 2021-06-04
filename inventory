@@ -4,10 +4,22 @@ rpi0
 [nas]
 nas0
 
-[consul_instances]
+[consul_instances:children]
+consul_servers
+consul_clients
+
+[nomad_instances:children]
+nomad_servers
+nomad_clients
+
+[nomad_servers]
 rpi0
+
+[nomad_clients]
 nas0
 
-[nomad_instances]
+[consul_servers]
 rpi0
+
+[consul_clients]
 nas0

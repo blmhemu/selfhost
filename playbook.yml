@@ -1,25 +1,25 @@
 ---
 # Playbook
 
-- name: Ready the nodes
-  hosts: all
-  roles:
-    - bootstrap
+# - name: Ready the nodes
+#   hosts: all
+#   roles:
+#     - bootstrap
 
-- name: Install tailscale
-  hosts: all
-  vars:
-    tailscale_auth_key: !vault |
-      $ANSIBLE_VAULT;1.1;AES256
-      37623032323963306134626461323661396436366664323136333438353335653665363837316261
-      3438623235383433623931373134363037616133633263650a336338653034346562383235393136
-      34363761393461623532396634623336386131393564303263356663343864313466613335646238
-      3663333965663061320a336135366261373636356537666262656436653563666537373438363665
-      34323662613637303534343066623365396430326365613338653638633463313664
-  tasks:
-    - include_role:
-        name: ansible_tailscale
-      when: ansible_tailscale0 is not defined
+# - name: Install tailscale
+#   hosts: all
+#   vars:
+#     tailscale_auth_key: !vault |
+#       $ANSIBLE_VAULT;1.1;AES256
+#       37623032323963306134626461323661396436366664323136333438353335653665363837316261
+#       3438623235383433623931373134363037616133633263650a336338653034346562383235393136
+#       34363761393461623532396634623336386131393564303263356663343864313466613335646238
+#       3663333965663061320a336135366261373636356537666262656436653563666537373438363665
+#       34323662613637303534343066623365396430326365613338653638633463313664
+#   tasks:
+#     - include_role:
+#         name: ansible_tailscale
+#       when: ansible_tailscale0 is not defined # add a check to see if we got an ip address
 
 # - name: Install podman
 #   hosts: nomad_instances
@@ -27,22 +27,22 @@
 #     - ansible_podman
 
 # - name: Install docker
-#   hosts: nomad_instances
+#   hosts: nomad_clients
 #   roles:
 #     - ansible_docker
 
-# - name: Install consul
-#   become: true
-#   hosts: consul_instances
-#   roles:
-#     - role: ansible_consul
-#       vars:
-#         consul_iface: tailscale0
-#         consul_client_address: "{{ansible_tailscale0.ipv4.address}}"
+- name: Install consul
+  become: true
+  hosts: consul_instances
+  roles:
+    - role: ansible_consul
+      vars:
+        consul_iface: tailscale0
+        consul_client_address: "{{ansible_tailscale0.ipv4.address}}"
 
-# - name: Install nomad
-#   become: true
-#   hosts: nomad_instances
+- name: Install nomad
+  become: true
+  hosts: nomad_instances
   # vars:
   #   nomad_plugins:
   #     nomad-driver-podman:
@@ -52,10 +52,9 @@
   #           enabled: true
   #           selinuxlabel: z
   #         recover_stopped: true
-  # roles:
-  #   - role: ansible_nomad
-  #     vars:
-  #       nomad_iface: "tailscale0"
-  #       nomad_network_interface: "{{ansible_tailscale0.ipv4.address}}"
+  roles:
+    - role: ansible_nomad
+      vars:
+        nomad_iface: tailscale0
         # nomad_servers:
         #   - "{{ansible_tailscale0.ipv4.address}}"
