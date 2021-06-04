@@ -28,7 +28,8 @@ cat ~/.ssh/id_rsa.pub | ssh user@host "mkdir -p ~/.ssh && chmod 700 ~/.ssh && ca
 
 ```shell
 # Get a reusable tailscale auth key at https://login.tailscale.com/admin/settings/authkeys
-# Encrypt the key using ansible vault. I prefer password based auth. You can use a password file with proper permissions and add it to .gitignore. Many shells log the history. Remove the command from shell history (.zsh_history | .bash_history)
+# Encrypt the key using ansible vault. Many shells log history
+# Remove the line from shell history (.zsh_history | .bash_history) after usage
 ansible-vault encrypt_string --ask-vault-pass 'tskey-xxxxxxxxxxxxxxxx' --name 'tailscale_auth_key'
 # Copy the output of the above command to the vars section of Install Tailscale part of playbook.yml
 # tailscale_auth_key: !vault |
