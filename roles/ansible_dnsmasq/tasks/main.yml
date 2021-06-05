@@ -32,7 +32,9 @@
     group: root
     mode: 0644
     backup: yes
-  when: ansible_facts.services['NetworkManager.service'].status == "enabled"
+  when:
+    - ansible_facts.services['NetworkManager.service'] is defined
+    - ansible_facts.services['NetworkManager.service'].status == "enabled"
 
 - name: Restart NetworkManager
   become: true
