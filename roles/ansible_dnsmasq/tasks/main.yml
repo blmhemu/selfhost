@@ -1,0 +1,70 @@
+---
+# tasks file for ansible_dnsmasq
+
+# We should install dnsmasq first and only then disable systemd-resolved
+- name: Install dnsmasq
+  become: true
+  package:
+    name: dnsmasq
+    state: present
+
+- name: Stop and disable systemd-resolved
+  become: true
+  service:
+    name: systemd-resolved
+    state: stopped
+    enabled: no
+    daemon_reload: yes
+
+- name: Gather service facts
+  service_facts:
+
+- name: Set 'dns=none' in /etc/NetworkManager/NetworkManager.conf
+  become: true
+  ini_file:
+    path: /etc/NetworkManager/NetworkManager.conf
+    state: present
+    no_extra_spaces: yes
+    section: main
+    option: dns
+    value: none
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  when: ansible_facts.services['NetworkManager.service'].status == "enabled"
+
+- name: Restart NetworkManager
+  become: true
+  service:
+    name: NetworkManager
+    state: reloaded
+  when: ansible_facts.services['NetworkManager.service'].status == "enabled"
+
+- name: Copy resolve.conf and backup the original (if differs from copied version)
+  become: true
+  copy:
+    src: resolv.conf
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+    attr: +i
+
+- name: Add dnsmasq config
+  become: true
+  template:
+    src: dnsmasq.j2
+    dest: /etc/dnsmasq.d/default.conf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+
+- name: Enable and restart dnsmasq
+  become: true
+  service:
+    name: dnsmasq
+    state: restarted
+    enabled: yes

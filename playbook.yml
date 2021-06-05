@@ -60,3 +60,17 @@
         nomad_iface: tailscale0
         nomad_use_consul: true
         nomad_consul_address: "{{ansible_tailscale0.ipv4.address}}:8500"
+
+- name: Configure dnsmasq to resolve consul subdomain
+  roles:
+    - role: ansible_dnsmasq
+      vars:
+        dnsmasq_config: |
+          no-resolv
+          # For consul domain
+          server=/consul/{{ansible_tailscale0.ipv4.address}}#8600
+          # For remaining
+          server=1.1.1.1
+          server=8.8.8.8
+          interface=tailscale0
+          bind-dynamic
