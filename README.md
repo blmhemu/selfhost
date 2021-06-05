@@ -27,7 +27,7 @@ cat ~/.ssh/id_rsa.pub | ssh user@host "mkdir -p ~/.ssh && chmod 700 ~/.ssh && ca
 ## Run the playbook
 
 ```shell
-# Get a reusable tailscale auth key at https://login.tailscale.com/admin/settings/authkeys
+# Get a reusable / ephemeral tailscale auth key at https://login.tailscale.com/admin/settings/authkeys
 # Encrypt the key using ansible vault
 # Remember to remove the line from shell history (.zsh_history | .bash_history)
 ansible-vault encrypt_string --ask-vault-pass 'tskey-xxxxxxxxxxxxxxxx' --name 'tailscale_auth_key'
