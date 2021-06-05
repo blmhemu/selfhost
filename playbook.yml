@@ -39,14 +39,6 @@
 - name: Install nomad
   become: true
   hosts: nomad_instances
-  vars:
-    nomad_plugins:
-      nomad-driver-podman:
-        config:
-          socket_path: unix://run/user/1000/podman/podman.sock
-          volumes:
-            enabled: true
-          recover_stopped: true
   roles:
     - role: ansible_nomad
       vars:
@@ -54,6 +46,14 @@
         nomad_iface: tailscale0
         nomad_use_consul: true
         nomad_consul_address: "{{ansible_tailscale0.ipv4.address}}:8500"
+        nomad_podman_version: 0.2.0
+        nomad_plugins:
+          nomad-driver-podman:
+            config:
+              socket_path: unix://run/user/1000/podman/podman.sock
+              volumes:
+                enabled: true
+              recover_stopped: true
 
 - name: Configure dnsmasq to resolve consul subdomain
   hosts: consul_instances
