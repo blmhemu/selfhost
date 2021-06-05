@@ -43,12 +43,27 @@
     name: en_US.UTF-8
     state: present
 
+- name: Force ipv4 apt
+  become: true
+  lineinfile:
+    path: /etc/apt/apt.conf.d/99force-ipv4
+    line: Acquire::ForceIPv4 "true";
+    create: yes
+    state: present
+  when: apt_force_ipv4
+
+# This is failing sometimes due to flaky connections (esp on Armbian). Hence retry
 - name: Update apt-cache and do dist upgrade
   become: true
   apt:
     update_cache: yes
     cache_valid_time: 3600
     upgrade: dist
+    state: fixed
+  register: apt_result
+  until: apt_result is not failed
+  retries: 10
+  delay: 10
 
 - name: Check if reboot-required file is set
   stat:
@@ -90,6 +105,12 @@
     cgroup_rpi.results[0].changed == true or
     cgroup_armbian.changed == true
 
+- name: Install useful packages
+  become: true
+  apt:
+    name: "{{ packages }}"
+    state: present
+
 - name: Clean unused deps and configs
   become: true
   apt:
@@ -100,9 +121,3 @@
   become: true
   apt:
     autoclean: yes
-
-- name: Install useful packages
-  become: true
-  apt:
-    name: "{{ packages }}"
-    state: present

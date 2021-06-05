@@ -2,6 +2,9 @@
 # defaults file for bootstrap
 
 packages:
+  - ca-certificates
   - apt-transport-https
   - curl
   - git
+
+apt_force_ipv4: false

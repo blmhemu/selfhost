@@ -18,3 +18,8 @@
   name: ansible_tailscale
   scm: git
   version: main
+
+- src: https://github.com/ypsman/ansible-ipv6-disable.git
+  name: ansible_disable_ipv6
+  scm: git
+  version: master
