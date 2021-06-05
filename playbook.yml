@@ -4,7 +4,8 @@
 - name: Ready nodes (Disable IPv6, APT maintainance, Install Tailscale)
   hosts: all
   roles:
-    - ansible_disable_ipv6
+    - role: ansible_disable_ipv6
+      become: true
     - role: bootstrap
       vars:
         apt_force_ipv4: true

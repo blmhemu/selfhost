@@ -39,3 +39,7 @@ ansible-vault encrypt_string --ask-vault-pass 'tskey-xxxxxxxxxxxxxxxx' --name 't
 # Run the playbook with below command. Enter vault password when prompted.
 ansible-playbook --ask-vault-pass playbook.yml
 ```
+
+## Post Run
+
+Configure Tailscale DNS with the IP addresses of the consul agents (both server and client) and a global DNS. Now the services must be accessible at `rpi0.node.consul` and `nas0.node.consul`
