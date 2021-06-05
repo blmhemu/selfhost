@@ -41,7 +41,9 @@
   service:
     name: NetworkManager
     state: reloaded
-  when: ansible_facts.services['NetworkManager.service'].status == "enabled"
+  when: 
+    - ansible_facts.services['NetworkManager.service'] is defined
+    - ansible_facts.services['NetworkManager.service'].status == "enabled"
 
 - name: Copy resolve.conf and backup the original (if differs from copied version)
   become: true
