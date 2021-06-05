@@ -77,7 +77,7 @@
   register: hostname_status
   when: ansible_hostname != inventory_hostname
 
-- name: add hostname to /etc/hosts
+- name: Add hostname to /etc/hosts
   become: true
   lineinfile:
     dest: /etc/hosts
