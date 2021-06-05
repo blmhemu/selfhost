@@ -29,6 +29,8 @@ cat ~/.ssh/id_rsa.pub | ssh user@host "mkdir -p ~/.ssh && chmod 700 ~/.ssh && ca
 ## Run the playbook
 
 ```shell
+# Install the required roles
+ansible-galaxy install -p roles -r roles/requirements.yml
 # Get an ephemeral (prefered) or reusable tailscale auth key at https://login.tailscale.com/admin/settings/authkeys
 # Encrypt the key using ansible vault
 # Remember to remove the line from shell history (.zsh_history | .bash_history)
