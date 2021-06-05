@@ -18,7 +18,11 @@
 - name: Install podman
   become: true
   apt:
-    name: podman
+    name:
+      - podman
+      - slirp4netns
+      - uidmap
+      - fuse-overlayfs
     state: present
 
 - name: Enable podman socket for this user
