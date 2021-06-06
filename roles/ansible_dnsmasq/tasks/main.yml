@@ -32,6 +32,7 @@
     group: root
     mode: 0644
     backup: yes
+  register: NetworkManager_changed
   when:
     - ansible_facts.services['NetworkManager.service'] is defined
     - ansible_facts.services['NetworkManager.service'].status == "enabled"
@@ -42,6 +43,7 @@
     name: NetworkManager
     state: reloaded
   when: 
+    - NetworkManager_changed.changed
     - ansible_facts.services['NetworkManager.service'] is defined
     - ansible_facts.services['NetworkManager.service'].status == "enabled"
 
