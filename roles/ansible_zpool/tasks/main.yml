@@ -41,16 +41,25 @@
   failed_when: zpool_import_status.rc not in [0, 1]
   when: zpool_status.rc == 1
 
-- name: Format and create zpool '{{ pool_name }}'
+- name: Format disk and create zpool '{{ pool_name }}'
   block:
+    - name: Read partition information (always use unit when probing)
+      community.general.parted:
+        device: /dev/disk/by-id/{{ disk_id }}
+        unit: MiB
+      register: disk_info
+
     - name: Format disk
-      filesystem:
-        dev: /dev/disk/by-id/{{ disk_id }}
+      become: true
+      parted:
+        device: /dev/disk/by-id/{{ disk_id }}
+        number: "{{ item.num }}"
         state: absent
+      loop: "{{ disk_info.partitions }}"
 
     - name: Create new zpool '{{ pool_name }}'
       become: true
-      command: zpool create -o ashift=12 -m {{ mount_point }} {{ pool_name }} /dev/disk/by-id/{{ disk_id }}
+      command: zpool create -o ashift=12 -m {{ mount_point }} {{ pool_name }} {{ disk_id }}
   when:
     - zpool_status.rc == 1
     - zpool_import_status.rc == 1
