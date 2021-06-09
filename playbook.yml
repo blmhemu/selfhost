@@ -73,6 +73,7 @@
           bind-dynamic
 
 # TODO: Make this role better for mirrored / raidz configurations
+# Refer to https://wiki.kobol.io/helios64/software/zfs/install-zfs/ for helios64
 - name: Setup ZFS
   hosts: nas
   roles:
