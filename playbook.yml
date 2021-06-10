@@ -6,7 +6,7 @@
   roles:
     - role: ansible_disable_ipv6
       become: true
-    - role: bootstrap
+    - bootstrap
     - role: ansible_tailscale
       when: ansible_tailscale0 is not defined # add a check to see if we got an ip address
 
@@ -14,7 +14,7 @@
 - name: Setup ZFS
   hosts: nas
   roles:
-    - role: ansible_zpool
+    - ansible_zpool
 
 # TODO: Make this role better for multiple NAS boxes
 - name: Create required zfs datasets
@@ -38,11 +38,11 @@
   become: true
   hosts: consul_instances
   roles:
-    - role: ansible_consul
-    - role: ansible_dnsmasq
+    - ansible_consul
+    - ansible_dnsmasq
 
 - name: Install nomad
   become: true
   hosts: nomad_instances
   roles:
-    - role: ansible_nomad
+    - ansible_nomad
