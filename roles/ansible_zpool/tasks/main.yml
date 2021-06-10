@@ -6,6 +6,7 @@
     msg: Please set a disk_id. (Optional) Encrypt before setting.
   when: disk_id is not defined
 
+# Refer to https://wiki.kobol.io/helios64/software/zfs/install-zfs/ for helios64
 - name: Install linux headers
   become: true
   apt:

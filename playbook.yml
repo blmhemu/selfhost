@@ -20,6 +20,24 @@
           34323662613637303534343066623365396430326365613338653638633463313664
       when: ansible_tailscale0 is not defined # add a check to see if we got an ip address
 
+# TODO: Make this role better for mirrored / raidz configurations
+- name: Setup ZFS
+  hosts: nas
+  roles:
+    - role: ansible_zpool
+
+# TODO: Make this role better for multiple NAS boxes
+- name: Create required zfs datasets
+  hosts: nas
+  tasks:
+    - name: Create datasets
+      become: true
+      zfs:
+        name: "{{ item.name }}"
+        state: "{{ item.state | default('present') }}"
+        extra_zfs_properties: "{{ item.props | default('{}') }}"
+      loop: "{{ datasets }}"
+
 - name: Install docker and podman
   hosts: nomad_clients
   roles:
@@ -86,22 +104,3 @@
           server=8.8.8.8
           interface=tailscale0
           bind-dynamic
-
-# TODO: Make this role better for mirrored / raidz configurations
-# Refer to https://wiki.kobol.io/helios64/software/zfs/install-zfs/ for helios64
-- name: Setup ZFS
-  hosts: nas
-  roles:
-    - role: ansible_zpool
-
-# TODO: Make this role better for multiple NAS boxes
-- name: Create required zfs datasets
-  hosts: nas
-  tasks:
-    - name: Create datasets
-      become: true
-      zfs:
-        name: "{{ item.name }}"
-        state: "{{ item.state | default('present') }}"
-        extra_zfs_properties: "{{ item.props | default('{}') }}"
-      loop: "{{ datasets }}"
