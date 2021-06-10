@@ -1,0 +1,12 @@
+---
+
+dnsmasq_config: |
+  no-resolv
+  # For consul domain
+  server=/consul/127.0.0.1#8600
+  address=/lan/{{ansible_tailscale0.ipv4.address}}
+  # For remaining
+  server=1.1.1.1
+  server=8.8.8.8
+  interface=tailscale0
+  bind-dynamic
