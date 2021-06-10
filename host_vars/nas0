@@ -32,9 +32,30 @@ datasets:
   - name: "{{ pool_name }}/config"
     props: compression=off
   - name: "{{ pool_name }}/config/snr"
+  - name: "{{ pool_name }}/config/rdr"
+  - name: "{{ pool_name }}/config/bzr"
+  - name: "{{ pool_name }}/config/jkt"
   - name: "{{ pool_name }}/config/qbt"
 
 nomad_host_volumes:
+  - name: bzr
+    path: "{{ pool_mount_point }}/config/bzr"
+    owner: ubuntu
+    group: ubuntu
+    mode: u=rwx,g=r,o=r
+    read_only: false
+  - name: jkt
+    path: "{{ pool_mount_point }}/config/jkt"
+    owner: ubuntu
+    group: ubuntu
+    mode: u=rwx,g=r,o=r
+    read_only: false
+  - name: rdr
+    path: "{{ pool_mount_point }}/config/rdr"
+    owner: ubuntu
+    group: ubuntu
+    mode: u=rwx,g=r,o=r
+    read_only: false
   - name: snr
     path: "{{ pool_mount_point }}/config/snr"
     owner: ubuntu
