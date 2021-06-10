@@ -34,11 +34,11 @@
     - ansible_docker
     - ansible_podman
 
-- name: Install consul
-  become: true
+- name: Install consul and configure consul
   hosts: consul_instances
   roles:
-    - ansible_consul
+    - role: ansible_consul
+      become: true
     - ansible_dnsmasq
 
 - name: Install nomad
