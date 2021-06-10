@@ -36,7 +36,7 @@ datasets:
   - name: "{{ pool_name }}/config/bzr"
   - name: "{{ pool_name }}/config/jkt"
   - name: "{{ pool_name }}/config/qbt"
-
+# Nomad is not fun for stateful workloads
 nomad_host_volumes:
   - name: bzr
     path: "{{ pool_mount_point }}/config/bzr"
