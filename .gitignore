@@ -2,4 +2,5 @@ roles/ansible_consul
 roles/ansible_nomad
 roles/ansible_docker
 roles/ansible_tailscale
-ansible_disable_ipv6
+roles/ansible_disable_ipv6
+nomad
