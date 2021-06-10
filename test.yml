@@ -23,8 +23,6 @@
   tasks:
     - name: Create datasets
       become: true
-      zfs:
-        name: "{{ item.name }}"
-        state: "{{ item.state }}"
-        extra_zfs_properties: "{{ item.props }}"
-      loop: "{{ datasets }}"
+      user:
+        name: lll
+        state: absent

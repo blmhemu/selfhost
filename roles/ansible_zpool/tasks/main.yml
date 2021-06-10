@@ -59,7 +59,7 @@
 
     - name: Create new zpool '{{ pool_name }}'
       become: true
-      command: zpool create -o ashift=12 -m {{ mount_point }} {{ pool_name }} {{ disk_id }}
+      command: zpool create -o ashift=12 -m {{ pool_mount_point }} {{ pool_name }} {{ disk_id }}
   when:
     - zpool_status.rc == 1
     - zpool_import_status.rc == 1

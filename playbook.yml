@@ -1,92 +1,91 @@
 ---
-# Playbook
+# # Playbook
 
-- name: Ready nodes (Disable IPv6, APT maintainance, Install Tailscale)
-  hosts: all
-  roles:
-    - role: ansible_disable_ipv6
-      become: true
-    - role: bootstrap
-      vars:
-        apt_force_ipv4: true
-    - role: ansible_tailscale
-      vars:
-        tailscale_auth_key: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          37623032323963306134626461323661396436366664323136333438353335653665363837316261
-          3438623235383433623931373134363037616133633263650a336338653034346562383235393136
-          34363761393461623532396634623336386131393564303263356663343864313466613335646238
-          3663333965663061320a336135366261373636356537666262656436653563666537373438363665
-          34323662613637303534343066623365396430326365613338653638633463313664
-      when: ansible_tailscale0 is not defined # add a check to see if we got an ip address
+# - name: Ready nodes (Disable IPv6, APT maintainance, Install Tailscale)
+#   hosts: all
+#   roles:
+#     - role: ansible_disable_ipv6
+#       become: true
+#     - role: bootstrap
+#       vars:
+#         apt_force_ipv4: true
+#     - role: ansible_tailscale
+#       vars:
+#         tailscale_auth_key: !vault |
+#           $ANSIBLE_VAULT;1.1;AES256
+#           37623032323963306134626461323661396436366664323136333438353335653665363837316261
+#           3438623235383433623931373134363037616133633263650a336338653034346562383235393136
+#           34363761393461623532396634623336386131393564303263356663343864313466613335646238
+#           3663333965663061320a336135366261373636356537666262656436653563666537373438363665
+#           34323662613637303534343066623365396430326365613338653638633463313664
+#       when: ansible_tailscale0 is not defined # add a check to see if we got an ip address
 
-- name: Install docker and podman
-  hosts: nomad_clients
-  roles:
-    - ansible_docker
-    - ansible_podman
+# - name: Install docker and podman
+#   hosts: nomad_clients
+#   roles:
+#     - ansible_docker
+#     - ansible_podman
 
-- name: Install consul
-  become: true
-  hosts: consul_instances
-  roles:
-    - role: ansible_consul
-      vars:
-        consul_version: 1.9.5
-        consul_iface: tailscale0
-        consul_client_address: "{{ansible_tailscale0.ipv4.address}} 127.0.0.1"
+# - name: Install consul
+#   become: true
+#   hosts: consul_instances
+#   roles:
+#     - role: ansible_consul
+#       vars:
+#         consul_version: 1.9.5
+#         consul_iface: tailscale0
+#         consul_client_address: "{{ansible_tailscale0.ipv4.address}} 127.0.0.1"
 
-- name: Install nomad
-  become: true
-  hosts: nomad_instances
-  roles:
-    - role: ansible_nomad
-      vars:
-        nomad_version: 1.1.0
-        nomad_iface: tailscale0
-        nomad_use_consul: true
-        nomad_consul_address: "{{ansible_tailscale0.ipv4.address}}:8500"
-        nomad_bootstrap_expect: 1 # Currently when nomad_use_consul is true, this is being set wrongly
-        nomad_podman_enable: true
-        nomad_podman_version: 0.2.0
-        nomad_plugins:
-          nomad-driver-podman:
-            config:
-              socket_path: unix://run/user/1000/podman/podman.sock
-              volumes:
-                enabled: true
-              recover_stopped: true
+# - name: Install nomad
+#   become: true
+#   hosts: nomad_instances
+#   roles:
+#     - role: ansible_nomad
+#       vars:
+#         nomad_version: 1.1.0
+#         nomad_iface: tailscale0
+#         nomad_use_consul: true
+#         nomad_bootstrap_expect: 1 # Currently when nomad_use_consul is true, this is being set wrongly
+#         nomad_podman_enable: true
+#         nomad_podman_version: 0.2.0
+#         nomad_plugins:
+#           nomad-driver-podman:
+#             config:
+#               socket_path: unix://run/user/1000/podman/podman.sock
+#               volumes:
+#                 enabled: true
+#               recover_stopped: true
 
-- name: Configure dnsmasq to resolve consul subdomain
-  hosts: consul_servers
-  roles:
-    - role: ansible_dnsmasq
-      vars:
-        dnsmasq_config: |
-          no-resolv
-          # For consul domain
-          server=/consul/127.0.0.1#8600
-          # For remaining
-          server=1.1.1.1
-          server=8.8.8.8
-          interface=tailscale0
-          bind-dynamic
+# - name: Configure dnsmasq to resolve consul subdomain
+#   hosts: consul_servers
+#   roles:
+#     - role: ansible_dnsmasq
+#       vars:
+#         dnsmasq_config: |
+#           no-resolv
+#           # For consul domain
+#           server=/consul/127.0.0.1#8600
+#           # For remaining
+#           server=1.1.1.1
+#           server=8.8.8.8
+#           interface=tailscale0
+#           bind-dynamic
 
-- name: Configure dnsmasq to resolve consul subdomain
-  hosts: consul_clients
-  roles:
-    - role: ansible_dnsmasq
-      vars:
-        dnsmasq_config: |
-          no-resolv
-          # For consul domain
-          server=/consul/127.0.0.1#8600
-          address=/lan/{{ansible_tailscale0.ipv4.address}}
-          # For remaining
-          server=1.1.1.1
-          server=8.8.8.8
-          interface=tailscale0
-          bind-dynamic
+# - name: Configure dnsmasq to resolve consul subdomain
+#   hosts: consul_clients
+#   roles:
+#     - role: ansible_dnsmasq
+#       vars:
+#         dnsmasq_config: |
+#           no-resolv
+#           # For consul domain
+#           server=/consul/127.0.0.1#8600
+#           address=/lan/{{ansible_tailscale0.ipv4.address}}
+#           # For remaining
+#           server=1.1.1.1
+#           server=8.8.8.8
+#           interface=tailscale0
+#           bind-dynamic
 
 # TODO: Make this role better for mirrored / raidz configurations
 # Refer to https://wiki.kobol.io/helios64/software/zfs/install-zfs/ for helios64
@@ -94,44 +93,15 @@
   hosts: nas
   roles:
     - role: ansible_zpool
-      vars:
-        disk_id: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          66656663356336303566656262623638353035383137396539363666396639353062663361306433
-          6663343134393131313966613435333231323135386464340a666438316638383735663763323130
-          30666339323834383731306461666130383566363365663666303638303135386137343964626233
-          3737613235363037330a343234346338633162353961386537353038633938396634333735616635
-          39316338656632356264386139613237616330303833353266633732366438383638613036633839
-          6435376335336133363634376332386139353766656131376463
-        pool_name: neo
-        mount_point: /mnt/{{ pool_name }}
 
 # TODO: Make this role better for multiple NAS boxes
 - name: Create required zfs datasets
   hosts: nas
-  vars:
-    pool_name: neo
-    datasets:
-      # How to select sensible props -
-      # 1. https://davidstephens.uk/ansible-nas/zfs/zfs_configuration/
-      # 2. https://jrs-s.net/2018/08/17/zfs-tuning-cheat-sheet/
-      # The first item is the whole pool. Try not to f-up.
-      - name: "{{ pool_name }}"
-        state: present
-        props: compression=zstd atime=off
-      # Config files do not take much space.
-      - name: "{{ pool_name }}/config"
-        state: present
-        props: compression=off
-      # Movies and shows are large and already compressed
-      - name: "{{ pool_name }}/flix"
-        state: present
-        props: recordsize=1M compression=off exec=off
   tasks:
     - name: Create datasets
       become: true
       zfs:
         name: "{{ item.name }}"
-        state: "{{ item.state }}"
-        extra_zfs_properties: "{{ item.props }}"
+        state: "{{ item.state | default('present') }}"
+        extra_zfs_properties: "{{ item.props | default('{}') }}"
       loop: "{{ datasets }}"
