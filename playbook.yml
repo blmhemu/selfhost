@@ -58,14 +58,30 @@
               recover_stopped: true
 
 - name: Configure dnsmasq to resolve consul subdomain
-  hosts: consul_instances
+  hosts: consul_servers
   roles:
     - role: ansible_dnsmasq
       vars:
         dnsmasq_config: |
           no-resolv
           # For consul domain
-          server=/consul/{{ansible_tailscale0.ipv4.address}}#8600
+          server=/consul/127.0.0.1#8600
+          # For remaining
+          server=1.1.1.1
+          server=8.8.8.8
+          interface=tailscale0
+          bind-dynamic
+
+- name: Configure dnsmasq to resolve consul subdomain
+  hosts: consul_clients
+  roles:
+    - role: ansible_dnsmasq
+      vars:
+        dnsmasq_config: |
+          no-resolv
+          # For consul domain
+          server=/consul/127.0.0.1#8600
+          address=/lan/{{ansible_tailscale0.ipv4.address}}
           # For remaining
           server=1.1.1.1
           server=8.8.8.8
