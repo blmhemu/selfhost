@@ -7,9 +7,9 @@ nomad_bootstrap_expect: 1 # Currently when nomad_use_consul is true, this is bei
 nomad_podman_enable: true
 nomad_podman_version: 0.2.0
 nomad_plugins:
-    nomad-driver-podman:
-        config:
-            socket_path: unix://run/user/1000/podman/podman.sock
-            volumes:
-                enabled: true
-            recover_stopped: true
+  nomad-driver-podman:
+    config:
+      socket_path: unix://run/user/1000/podman/podman.sock
+      volumes:
+        enabled: true
+      recover_stopped: true
