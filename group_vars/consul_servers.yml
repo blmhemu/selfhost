@@ -8,4 +8,5 @@ dnsmasq_config: |
   server=1.1.1.1
   server=8.8.8.8
   interface=tailscale0
+  interface=docker0
   bind-dynamic

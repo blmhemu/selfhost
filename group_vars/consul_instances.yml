@@ -2,4 +2,4 @@
 
 consul_version: 1.9.5
 consul_iface: tailscale0
-consul_client_address: "{{ansible_tailscale0.ipv4.address}} 127.0.0.1"
+consul_client_address: "{{ '{{' }} GetInterfaceIP \"tailscale0\" {{ '}}' }} {{ '{{' }} GetInterfaceIP \"docker0\" {{ '}}' }} 127.0.0.1"
