@@ -42,7 +42,7 @@
     - ansible_dnsmasq
 
 - name: Install nomad
-  become: true
   hosts: nomad_instances
   roles:
-    - ansible_nomad
+    - role: ansible_nomad
+      become: true
