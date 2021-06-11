@@ -9,7 +9,7 @@
   scm: git
   version: master
 
-- src: https://github.com/blmhemu/ansible-role-docker
+- src: https://github.com/darkwizard242/ansible-role-docker
   name: ansible_docker
   scm: git
   version: master
