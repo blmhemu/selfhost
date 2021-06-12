@@ -26,6 +26,7 @@ job "syn" {
       driver = "docker"
       config {
         image = "syncthing/syncthing"
+        hostname = NAS
         ports = ["http"]
         # Host networking for local device discovery
         # https://github.com/syncthing/syncthing/blob/main/README-Docker.md
