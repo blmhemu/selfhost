@@ -19,7 +19,12 @@ job "fbr" {
     }
     volume "fbrc" {
       type      = "host"
-      source    = "fbr"
+      source    = "fbrc"
+      read_only = false
+    }
+    volume "fbrd" {
+      type      = "host"
+      source    = "fbrd"
       read_only = false
     }
     task "fbr" {
@@ -34,6 +39,11 @@ job "fbr" {
       volume_mount {
         volume      = "fbrc"
         destination = "/config"
+        read_only   = false
+      }
+      volume_mount {
+        volume      = "fbrd"
+        destination = "/data"
         read_only   = false
       }
       template {
