@@ -10,9 +10,9 @@ job "syn" {
       name = "syn"
       tags = ["urlprefix-syn.lan/"]
       port = "http"
+      # TCP because we setup a basic auth which gives 4xx error if http is used
       check {
-        type     = "http"
-        path     = "/"
+        type     = "tcp"
         interval = "30s"
         timeout  = "5s"
       }
