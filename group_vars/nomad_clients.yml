@@ -1,0 +1,4 @@
+---
+docker_add_nonroot_users: true
+docker_nonroot_users:
+  - ubuntu
