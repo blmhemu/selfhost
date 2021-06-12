@@ -27,6 +27,8 @@ job "syn" {
       config {
         image = "syncthing/syncthing"
         ports = ["http"]
+        # Host networking for local device discovery
+        # https://github.com/syncthing/syncthing/blob/main/README-Docker.md
         network_mode = "host"
       }
       env {
