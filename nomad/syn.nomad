@@ -32,7 +32,7 @@ job "syn" {
       env {
         PUID          = 1000
         PGID          = 1000
-        STGUIADDRESS  = "${NOMAD_PORT_http}"
+        STGUIADDRESS  = "0.0.0.0:${NOMAD_PORT_http}"
       }
       volume_mount {
         volume      = "synd"
