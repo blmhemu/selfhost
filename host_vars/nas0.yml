@@ -31,6 +31,7 @@ datasets:
   # Config files do not take much space.
   - name: "{{ pool_name }}/config"
     props: compression=off
+  - name: "{{ pool_name }}/config/fbr"
   - name: "{{ pool_name }}/config/snr"
   - name: "{{ pool_name }}/config/rdr"
   - name: "{{ pool_name }}/config/bzr"
@@ -38,6 +39,12 @@ datasets:
   - name: "{{ pool_name }}/config/qbt"
 # Nomad is not fun for stateful workloads
 nomad_host_volumes:
+  - name: fbr
+    path: "{{ pool_mount_point }}/config/fbr"
+    owner: ubuntu
+    group: ubuntu
+    mode: u=rwx,g=r,o=r
+    read_only: false
   - name: bzr
     path: "{{ pool_mount_point }}/config/bzr"
     owner: ubuntu
