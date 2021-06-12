@@ -21,6 +21,7 @@ job "fabio" {
       driver = "docker"
       config {
         image = "blmhemu/fabio"
+        # Host network mode because fabio need to be able to ping other services
         network_mode = "host"
         ports = ["lb","ui"]
         volumes = [
