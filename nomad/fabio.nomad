@@ -30,7 +30,7 @@ job "fabio" {
       template {
         data = <<EOF
 proxy.addr = :80
-ui.addr = :${NOMAD_PORT_ui}
+ui.addr = :{{env "NOMAD_PORT_ui"}}
 EOF
         destination = "local/fabio.properties"
       }

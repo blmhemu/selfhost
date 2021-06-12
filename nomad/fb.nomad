@@ -24,16 +24,31 @@ job "fbr" {
     }
     task "fbr" {
       driver = "docker"
+      user = "1000:1000"
       config {
         image = "hurlenko/filebrowser"
         ports = ["http"]
+        args = ["--config", "filebrowser.json",]
+        volumes = ["local/filebrowser.json:/filebrowser.json",]
       }
       volume_mount {
         volume      = "fbrc"
         destination = "/config"
         read_only   = false
       }
-      user = "1000:1000"
+      template {
+        data = <<EOF
+{
+  "port": {{ env "NOMAD_PORT_http" }},
+  "baseURL": "",
+  "address": "",
+  "log": "stdout",
+  "database": "/config/database.db",
+  "root": "/data"
+}
+EOF
+        destination = "local/filebrowser.json"
+      }
       resources {
         cpu    = 200
         memory = 128
