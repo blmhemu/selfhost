@@ -29,11 +29,11 @@ job "fbr" {
     }
     task "fbr" {
       driver = "docker"
-      user = "1000:1000"
+      user   = "1000:1000"
       config {
-        image = "hurlenko/filebrowser"
-        ports = ["http"]
-        args = ["--config", "filebrowser.json",]
+        image   = "hurlenko/filebrowser"
+        ports   = ["http"]
+        args    = ["--config", "filebrowser.json",]
         volumes = ["local/filebrowser.json:/filebrowser.json",]
       }
       volume_mount {
