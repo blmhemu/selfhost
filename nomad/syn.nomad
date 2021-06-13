@@ -31,6 +31,7 @@ job "syn" {
         # Host networking for local device discovery
         # https://github.com/syncthing/syncthing/blob/main/README-Docker.md
         network_mode = "host"
+        dns_servers = ["172.17.0.1", "1.1.1.1", "8.8.8.8"]
       }
       env {
         PUID          = 1000
