@@ -37,11 +37,18 @@ datasets:
   - name: "{{ pool_name }}/config/bzr"
   - name: "{{ pool_name }}/config/jkt"
   - name: "{{ pool_name }}/config/qbt"
-  # Movies and shows are large and already compressed
+  # These are important data
   - name: "{{ pool_name }}/drive/fbr"
   - name: "{{ pool_name }}/drive/syn"
+  - name: "{{ pool_name }}/drive/ete"
 # Nomad is not fun for stateful workloads
 nomad_host_volumes:
+  - name: eted
+    path: "{{ pool_mount_point }}/drive/ete"
+    owner: ubuntu
+    group: ubuntu
+    mode: u=rwx,g=r,o=r
+    read_only: false
   - name: fbrd
     path: "{{ pool_mount_point }}/drive/fbr"
     owner: ubuntu
