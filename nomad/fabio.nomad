@@ -6,17 +6,6 @@ job "fabio" {
       port "lb" { static = 80 }
       port "ui" {}
     }
-    service {
-      name = "fabio"
-      port = "ui"
-      tags = ["urlprefix-fabio.lan/"]
-      check {
-        type     = "http"
-        path     = "/"
-        interval = "10s"
-        timeout  = "2s"
-      }
-    }
     task "fabio" {
       driver = "docker"
       config {
@@ -32,6 +21,7 @@ job "fabio" {
         data = <<EOF
 proxy.addr = :80
 ui.addr = :{{env "NOMAD_PORT_ui"}}
+registry.consul.register.tags = urlprefix-fabio.lan/
 EOF
         destination = "local/fabio.properties"
       }
