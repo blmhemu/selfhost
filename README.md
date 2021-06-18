@@ -6,7 +6,7 @@ For transfer install on helios64
 
 ```shell
 # Transfer install onto ssd
-sudo mkfs -t ext4 /dev/sda
+sudo mkfs -t ext4 /dev/sd[x]
 sudo amrbian-config
 ```
 
