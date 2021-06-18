@@ -2,8 +2,9 @@
 
 - name: Create partition for tranfer install
   hosts: nas0
+  become: true
   tasks:
-    - name: Create partition
+    - name: Create partition 1 on os_disk
       parted:
         device: /dev/disk/by-id/{{ os_disk }}
         number: 1

@@ -1,16 +1,6 @@
 # selfhost
 
-## Prereqs
-
-For transfer install on helios64
-
-```shell
-# Transfer install onto ssd
-sudo mkfs -t ext4 /dev/sd[x]
-sudo amrbian-config
-```
-
-## Initial Setup
+## <a name="inital_setup"></a> Initial Setup
 
 Make sure rpi0 and nas0 are available at 192.168.0.100 and 192.168.0.101 respectively (Configure either in router or static ip in the node)
 
@@ -36,7 +26,18 @@ ssh-copy-id -i ~/.ssh/mykey user@host
 cat ~/.ssh/id_rsa.pub | ssh user@host "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >>  ~/.ssh/authorized_keys"
 ```
 
-## Run the playbook
+## Transfer Install (Optional | Helios64)
+
+For transfer install on helios64
+
+```shell
+# Run parted playbook
+ansible-playbook --ask-vault-pass parted.yml
+```
+
+And follow the steps at https://wiki.kobol.io/helios64/install/transfer/
+
+## Cluster setup
 
 ```shell
 # Install the required roles
