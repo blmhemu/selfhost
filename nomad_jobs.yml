@@ -1,0 +1,26 @@
+---
+
+- name: Create job
+  hosts: nas0
+  tasks:
+    - name: Install pip3
+      become: true
+      apt:
+        name: python3-pip
+        state: present
+    - name: Install python nomad
+      pip:
+        name: python-nomad
+        state: present
+    - name: Jobs
+      community.general.nomad_job:
+        host: "{{ ansible_tailscale0.ipv4.address }}"
+        use_ssl: no
+        state: present
+        content: "{{ lookup('ansible.builtin.file', 'nomad_jobs/echo.nomad') }}"
+        timeout: 120
+    - name: lol
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ lookup('fileglob', 'nomad_jobs/*', wantlist=True) }}"
+
