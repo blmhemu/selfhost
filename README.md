@@ -2,7 +2,7 @@
 
 ## Prereqs
 
-For transfer install :
+For transfer install on helios64
 
 ```shell
 # Transfer install onto ssd
