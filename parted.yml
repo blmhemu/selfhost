@@ -1,0 +1,12 @@
+---
+
+- name: Create partition for tranfer install
+  hosts: nas0
+  tasks:
+    - name: Create partition
+      parted:
+        device: /dev/disk/by-id/{{ os_disk }}
+        number: 1
+        state: present
+        fs_type: ext4
+        label: gpt
