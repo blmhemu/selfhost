@@ -2,27 +2,6 @@
 
 - name: Create required zfs datasets / filesystems
   hosts: nas
-  vars:
-    pool_name: neo
-    datasets:
-      # How to select sensible props -
-      # 1. https://davidstephens.uk/ansible-nas/zfs/zfs_configuration/
-      # 2. https://jrs-s.net/2018/08/17/zfs-tuning-cheat-sheet/
-      # The first item is the whole pool. Try not to f-up.
-      - name: "{{ pool_name }}"
-        state: present
-        props: compression=zstd atime=off
-      # Config files do not take much space.
-      - name: "{{ pool_name }}/config"
-        state: present
-        props: compression=off
-      # Movies and shows are large and already compressed
-      - name: "{{ pool_name }}/flix"
-        state: present
-        props: recordsize=1M compression=off exec=off
   tasks:
-    - name: Create datasets
-      become: true
-      user:
-        name: lll
-        state: absent
+    - debug:
+        msg: "{{ansible_tailscale0}} {{ansible_default_ipv4.address}}"
