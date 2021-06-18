@@ -3,3 +3,13 @@
 consul_version: 1.9.5
 consul_iface: tailscale0
 consul_client_address: "{{ ansible_tailscale0.ipv4.address }} {{ ansible_docker0.ipv4.address | default('') }} 127.0.0.1"
+dnsmasq_config: |
+  no-resolv
+  # For consul domain
+  server=/consul/127.0.0.1#8600
+  # For remaining
+  server=1.1.1.1
+  server=8.8.8.8
+  interface=tailscale0
+  interface=docker0
+  bind-dynamic
