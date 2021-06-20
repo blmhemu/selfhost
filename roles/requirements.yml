@@ -4,7 +4,7 @@
   scm: git
   version: master
 
-- src: https://github.com/ansible-community/ansible-nomad.git
+- src: https://github.com/blmhemu/ansible-nomad.git
   name: ansible_nomad
   scm: git
   version: master
