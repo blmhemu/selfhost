@@ -1,6 +1,6 @@
 # selfhost
 
-## <a name="inital_setup"></a> Initial Setup
+## Initial Setup
 
 Make sure rpi0 and nas0 are available at 192.168.0.100 and 192.168.0.101 respectively (Configure either in router or static ip in the node)
 
