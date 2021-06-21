@@ -3,6 +3,9 @@ docker_add_nonroot_users: true
 docker_nonroot_users:
   - ubuntu
 nomad_host_networks:
+  - name: localhost
+    interface: lo
+    reserved_ports: 22
   - name: tailscale
     interface: tailscale0
     reserved_ports: 22
