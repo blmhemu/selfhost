@@ -4,7 +4,6 @@ ansible_host: 192.168.0.101
 consul_node_role: client
 nomad_node_role: client
 nomad_docker_enable: true
-# os_disk: ata-WDC_WDS120G2G0B-00EPW0_2043A2453007
 os_disk: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   33376265333763323265313237303862386537636633303861336235636261326632383164373162
@@ -40,6 +39,7 @@ datasets:
   # Config files do not take much space.
   - name: "{{ pool_name }}/config"
     props: compression=off
+  - name: "{{ pool_name }}/config/traefik"
   - name: "{{ pool_name }}/config/fbr"
   - name: "{{ pool_name }}/config/snr"
   - name: "{{ pool_name }}/config/rdr"
@@ -66,6 +66,12 @@ nomad_host_volumes:
     read_only: false
   - name: synd
     path: "{{ pool_mount_point }}/drive/syn"
+    owner: ubuntu
+    group: ubuntu
+    mode: u=rwx,g=r,o=r
+    read_only: false
+  - name: traefikc
+    path: "{{ pool_mount_point }}/config/traefik"
     owner: ubuntu
     group: ubuntu
     mode: u=rwx,g=r,o=r
