@@ -6,5 +6,9 @@ packages:
   - apt-transport-https
   - curl
   - git
+  - python3-pip
+
+pip_packages:
+  - python-nomad
 
 apt_force_ipv4: false

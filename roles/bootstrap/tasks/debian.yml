@@ -111,6 +111,11 @@
     name: "{{ packages }}"
     state: present
 
+- name: Install pip packages
+  pip:
+    name: "{{ pip_packages }}"
+    state: present
+
 - name: Clean unused deps and configs
   become: true
   apt:

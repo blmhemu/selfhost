@@ -3,18 +3,9 @@
 - name: Create job
   hosts: nas0
   tasks:
-    - name: Install pip3
-      become: true
-      apt:
-        name: python3-pip
-        state: present
-    - name: Install python-nomad
-      pip:
-        name: python-nomad
-        state: present
     - name: Load nomad vars
       include_vars: file=nomad_jobs/vars.yml
-    - name: Jobs
+    - name: Deploy nomad jobs
       community.general.nomad_job:
         host: "{{ ansible_tailscale0.ipv4.address }}"
         use_ssl: no
@@ -22,4 +13,5 @@
         content: "{{ lookup('template', '{{ item }}') }}"
         timeout: 120
       with_fileglob:
+        - nomad_jobs/*.nomad
         - nomad_jobs/*.nomad.j2
