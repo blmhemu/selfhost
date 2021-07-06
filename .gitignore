@@ -3,4 +3,5 @@ roles/ansible_nomad
 roles/ansible_docker
 roles/ansible_tailscale
 roles/ansible_disable_ipv6
+nomad_jobs_old
 .vscode

@@ -26,6 +26,11 @@ ssh-copy-id -i ~/.ssh/mykey user@host
 cat ~/.ssh/id_rsa.pub | ssh user@host "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >>  ~/.ssh/authorized_keys"
 ```
 
+```shell
+# Make sure gnu tar is available on local machine (especially on MacOS)
+brew install gnu-tar
+```
+
 ## Transfer Install (Optional | Helios64)
 
 For transfer install on helios64
