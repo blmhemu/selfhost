@@ -7,6 +7,7 @@ nomad_use_consul: true
 nomad_podman_enable: true
 nomad_podman_version: 0.2.0
 nomad_cni_enable: true
+nomad_encrypt_enable: true
 nomad_plugins:
   nomad-driver-podman:
     config:
