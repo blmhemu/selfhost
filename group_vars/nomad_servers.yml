@@ -1,0 +1,5 @@
+---
+
+nomad_ca_file: /var/nomad/nomad-agent-ca.pem
+nomad_cert_file: /var/nomad/global-server-nomad-0.pem
+nomad_key_file: /var/nomad/global-server-nomad-0-key.pem
