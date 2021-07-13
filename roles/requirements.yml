@@ -1,11 +1,12 @@
 ---
-- src: https://github.com/ansible-community/ansible-consul.git
-  name: ansible_consul
-  scm: git
-  version: master
 
 - src: https://github.com/blmhemu/ansible-nomad.git
   name: ansible_nomad
+  scm: git
+  version: master
+
+- src: https://github.com/blmhemu/ansible-consul.git
+  name: ansible_consul
   scm: git
   version: master
 
