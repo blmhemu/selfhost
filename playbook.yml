@@ -1,5 +1,5 @@
 ---
-# # Playbook
+# Playbook
 
 - import_playbook: deps.yml
 - import_playbook: tls.yml

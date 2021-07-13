@@ -1,8 +1,7 @@
 ---
 
-nomad_ca_file: nomad-agent-ca.pem
-nomad_cert_file: global-client-nomad-0.pem
-nomad_key_file: global-client-nomad-0-key.pem
+nomad_cert_file: "{{ tls_dir_nomad }}/{{ inventory_hostname }}/global-client-nomad-0.pem"
+nomad_key_file: "{{ tls_dir_nomad }}/{{ inventory_hostname }}/global-client-nomad-0-key.pem"
 
 docker_add_nonroot_users: true
 docker_nonroot_users:
