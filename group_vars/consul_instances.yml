@@ -13,3 +13,16 @@ dnsmasq_config: |
   interface=tailscale0
   interface=docker0
   bind-dynamic
+
+consul_tls_enable: true
+consul_tls_copy_keys: true
+consul_tls_ca_src_dir: "{{ tls_dir_consul_ca }}"
+consul_tls_cert_src_dir: "{{ tls_dir_consul }}/{{ inventory_hostname }}"
+consul_tls_key_src_dir: "{{ tls_dir_consul }}/{{ inventory_hostname }}"
+consul_tls_verify_incoming: true
+consul_tls_verify_outgoing: true
+consul_tls_verify_incoming_rpc: true
+consul_tls_verify_incoming_https: true
+consul_tls_verify_server_hostname: true
+consul_ports_http: -1
+consul_ports_https: 8501
