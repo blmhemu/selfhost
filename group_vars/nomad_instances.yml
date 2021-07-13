@@ -17,7 +17,6 @@ nomad_plugins:
 nomad_encrypt_enable: true
 nomad_tls_enable: true
 nomad_tls_copy_keys: true
-nomad_ca_remote_dir: "tls/nomad/ca"
-nomad_cert_remote_dir: "tls/nomad/{{inventory_hostname}}"
-nomad_key_remote_dir: "tls/nomad/{{inventory_hostname}}"
-nomad_rpc_upgrade_mode: false
+nomad_ca_src_dir: "tls/nomad/ca"
+nomad_cert_src_dir: "tls/nomad/{{inventory_hostname}}"
+nomad_key_src_dir: "tls/nomad/{{inventory_hostname}}"
