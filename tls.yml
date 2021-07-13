@@ -1,14 +1,4 @@
 ---
-# - name: Playing with Ansible and Git
-#   hosts: localhost
-#   connection: local
-#   tasks:
-#     - name: Install prerequisites
-#       package:
-#         name:
-#           - gnu-tar
-#           - consul
-#         state: present
 
 - name: Install nomad
   hosts: nomad_instances

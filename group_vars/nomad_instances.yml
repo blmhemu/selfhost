@@ -22,3 +22,5 @@ nomad_tls_copy_keys: true
 nomad_ca_src_dir: "{{ tls_dir_nomad_ca }}"
 nomad_cert_src_dir: "{{ tls_dir_nomad }}/{{ inventory_hostname }}"
 nomad_key_src_dir: "{{ tls_dir_nomad }}/{{ inventory_hostname }}"
+nomad_verify_server_hostname: true
+nomad_verify_https_client: true
