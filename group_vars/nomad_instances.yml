@@ -15,3 +15,5 @@ nomad_plugins:
       volumes:
         enabled: true
       recover_stopped: true
+nomad_tls_enable: true
+nomad_rpc_upgrade_mode: false

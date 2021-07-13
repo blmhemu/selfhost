@@ -1,7 +1,13 @@
 ---
+
+nomad_ca_file: /var/nomad/nomad-agent-ca.pem
+nomad_cert_file: /var/nomad/global-client-nomad-0.pem
+nomad_key_file: /var/nomad/global-client-nomad-0-key.pem
+
 docker_add_nonroot_users: true
 docker_nonroot_users:
   - ubuntu
+
 nomad_host_networks:
   - name: localhost
     interface: lo

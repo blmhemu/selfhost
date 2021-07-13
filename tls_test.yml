@@ -1,0 +1,114 @@
+---
+# - name: Playing with Ansible and Git
+#   hosts: localhost
+#   connection: local
+#   tasks:
+#     - name: Install prerequisites
+#       package:
+#         name:
+#           - gnu-tar
+#           - consul
+#         state: present
+
+- name: Install nomad
+  hosts: nomad_instances
+  # gather_facts: no
+  vars:
+    - tls_dir: "tls"
+    - tls_dir_nomad: "{{ tls_dir }}/nomad"
+    - tls_dir_nomad_ca: "{{ tls_dir_nomad }}/ca"
+    - tls_dir_nomad_cli: "{{ tls_dir_nomad }}/cli"
+    - tls_dir_consul: "{{ tls_dir }}/consul"
+    - tls_dir_consul_ca: "{{ tls_dir_consul }}/ca"
+    - tls_dir_consul_cli: "{{ tls_dir_consul }}/cli"
+  tasks:
+    - name: Ensure tls dirs exists for nomad and consul
+      file:
+        path: "{{ item }}"
+        state: directory
+      run_once: true
+      delegate_to: 127.0.0.1
+      with_items:
+        - "{{ tls_dir_nomad_ca }}"
+        - "{{ tls_dir_nomad_cli }}"
+        - "{{ tls_dir_consul_ca }}"
+        - "{{ tls_dir_consul_cli }}"
+
+    - name: Ensure tls sub-dirs exists for nomad and consul
+      file:
+        path: "{{ item }}/{{ inventory_hostname }}"
+        state: directory
+      delegate_to: 127.0.0.1
+      with_items:
+        - "{{ tls_dir_nomad }}"
+        - "{{ tls_dir_consul }}"
+
+    - name: Create nomad CA
+      command: consul tls ca create -domain=nomad -name-constraint
+      args:
+        chdir: "{{ tls_dir_nomad_ca }}"
+        creates: "nomad-agent-ca-key.pem"
+      run_once: true
+      delegate_to: 127.0.0.1
+      when:
+
+    - name: Create certs for nomad servers
+      debug: 
+        msg: "{{ ansible_tailscale0.ipv4.address }}"
+      delegate_to: 127.0.0.1
+    
+    - name: Create certs for nomad servers
+      command: >
+        consul tls cert create
+        -server
+        -ca={{ playbook_dir }}/{{ tls_dir_nomad_ca }}/nomad-agent-ca.pem
+        -key={{ playbook_dir }}/{{ tls_dir_nomad_ca }}/nomad-agent-ca-key.pem
+        -additional-ipaddress={{ ansible_tailscale0.ipv4.address }}
+        -domain nomad
+        -dc=global
+      args:
+        chdir: "{{ tls_dir_nomad }}/{{ inventory_hostname }}"
+        creates: "global-server-nomad-0-key.pem"
+      delegate_to: 127.0.0.1
+
+      when: "'nomad_servers' in group_names"
+
+    - name: Create certs for nomad clients
+      command: >
+        consul tls cert create
+        -client
+        -ca={{ playbook_dir }}/{{ tls_dir_nomad_ca }}/nomad-agent-ca.pem
+        -key={{ playbook_dir }}/{{ tls_dir_nomad_ca }}/nomad-agent-ca-key.pem
+        -additional-ipaddress={{ ansible_tailscale0.ipv4.address }}
+        -domain nomad
+        -dc=global
+      args:
+        chdir: "{{ tls_dir_nomad }}/{{ inventory_hostname }}"
+        creates: "global-client-nomad-0-key.pem"
+      delegate_to: 127.0.0.1
+      when: "'nomad_clients' in group_names"
+
+    - name: Create certs for nomad cli
+      command: >
+        consul tls cert create
+        -cli
+        -ca={{ playbook_dir }}/{{ tls_dir_nomad_ca }}/nomad-agent-ca.pem
+        -key={{ playbook_dir }}/{{ tls_dir_nomad_ca }}/nomad-agent-ca-key.pem
+        -domain nomad
+        -dc=global
+      args:
+        chdir: "{{ tls_dir_nomad_cli }}"
+        creates: "global-cli-nomad-0-key.pem"
+      run_once: true
+      delegate_to: 127.0.0.1
+
+    - name: Install Nomad TLS
+      become: true
+      copy:
+        src: "{{ item }}"
+        dest: /var/nomad
+        owner: root
+        group: bin
+      with_fileglob:
+        - "{{ tls_dir_nomad_ca }}/nomad-agent-ca.pem"
+        - "{{ tls_dir_nomad }}/{{inventory_hostname}}/*"
