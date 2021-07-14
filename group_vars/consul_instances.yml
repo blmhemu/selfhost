@@ -14,6 +14,7 @@ dnsmasq_config: |
   interface=docker0
   bind-dynamic
 
+# TLS and Security
 consul_tls_enable: true
 consul_tls_copy_keys: true
 consul_tls_ca_crt: "{{ tls_dir_consul_ca }}/consul-agent-ca.pem"
