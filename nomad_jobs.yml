@@ -8,10 +8,14 @@
     - name: Deploy nomad jobs
       community.general.nomad_job:
         host: "{{ ansible_tailscale0.ipv4.address }}"
-        use_ssl: no
+        use_ssl: yes
+        validate_certs: no
+        client_cert: "tls/nomad/cli/global-cli-nomad-0.pem"
+        client_key: "tls/nomad/cli/global-cli-nomad-0-key.pem"
         state: present
         content: "{{ lookup('template', '{{ item }}') }}"
         timeout: 120
       with_fileglob:
         - nomad_jobs/*.nomad
         - nomad_jobs/*.nomad.j2
+      delegate_to: 127.0.0.1

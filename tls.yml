@@ -39,6 +39,7 @@
         -ca={{ playbook_dir }}/{{ tls_dir_nomad_ca }}/nomad-agent-ca.pem
         -key={{ playbook_dir }}/{{ tls_dir_nomad_ca }}/nomad-agent-ca-key.pem
         -additional-ipaddress={{ ansible_tailscale0.ipv4.address }}
+        -additional-ipaddress=172.17.0.1
         -additional-ipaddress={{ ansible_default_ipv4.address }}
         -domain=nomad
         -dc=global
@@ -55,6 +56,7 @@
         -ca={{ playbook_dir }}/{{ tls_dir_nomad_ca }}/nomad-agent-ca.pem
         -key={{ playbook_dir }}/{{ tls_dir_nomad_ca }}/nomad-agent-ca-key.pem
         -additional-ipaddress={{ ansible_tailscale0.ipv4.address }}
+        -additional-ipaddress=172.17.0.1
         -additional-ipaddress={{ ansible_default_ipv4.address }}
         -domain=nomad
         -dc=global
@@ -94,6 +96,7 @@
         -ca={{ playbook_dir }}/{{ tls_dir_consul_ca }}/consul-agent-ca.pem
         -key={{ playbook_dir }}/{{ tls_dir_consul_ca }}/consul-agent-ca-key.pem
         -additional-ipaddress={{ ansible_tailscale0.ipv4.address }}
+        -additional-ipaddress=172.17.0.1
         -additional-ipaddress={{ ansible_default_ipv4.address }}
       args:
         chdir: "{{ tls_dir_consul }}/{{ inventory_hostname }}"
@@ -108,6 +111,7 @@
         -ca={{ playbook_dir }}/{{ tls_dir_consul_ca }}/consul-agent-ca.pem
         -key={{ playbook_dir }}/{{ tls_dir_consul_ca }}/consul-agent-ca-key.pem
         -additional-ipaddress={{ ansible_tailscale0.ipv4.address }}
+        -additional-ipaddress=172.17.0.1
         -additional-ipaddress={{ ansible_default_ipv4.address }}
       args:
         chdir: "{{ tls_dir_consul }}/{{ inventory_hostname }}"

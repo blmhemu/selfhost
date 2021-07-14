@@ -27,8 +27,9 @@ cat ~/.ssh/id_rsa.pub | ssh user@host "mkdir -p ~/.ssh && chmod 700 ~/.ssh && ca
 ```
 
 ```shell
-# Make sure gnu tar is available on local machine (especially on MacOS)
-brew install gnu-tar
+# Make sure gnu tar, consul, python-nomad are available on local machine (especially on MacOS)
+brew install gnu-tar consul
+pip3 install python-nomad
 ```
 
 ## Transfer Install (Optional | Helios64)
