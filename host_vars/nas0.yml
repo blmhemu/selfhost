@@ -30,103 +30,60 @@ datasets:
   # The first item is the whole pool. Try not to f-up.
   - name: "{{ pool_name }}"
     props: compression=zstd atime=off
+  - name: "{{ pool_name }}/traefik"
+  - name: "{{ pool_name }}/nextcloud"
+  - name: "{{ pool_name }}/nextcloud/nextcloud"
+  - name: "{{ pool_name }}/nextcloud/db"
+  - name: "{{ pool_name }}/photoprism"
+  - name: "{{ pool_name }}/photoprism/originals"
+  - name: "{{ pool_name }}/photoprism/db"
+  - name: "{{ pool_name }}/photoprism/import"
+  - name: "{{ pool_name }}/photoprism/storage"
   # Movies and shows are large and already compressed
-  - name: "{{ pool_name }}/flix"
-    props: recordsize=1M compression=off exec=off
-  - name: "{{ pool_name }}/flix/downloads"
-  - name: "{{ pool_name }}/flix/tv"
-  - name: "{{ pool_name }}/flix/movies"
-  # Config files do not take much space.
-  - name: "{{ pool_name }}/config"
-    props: compression=off
-  - name: "{{ pool_name }}/config/traefik"
-  - name: "{{ pool_name }}/config/fbr"
-  - name: "{{ pool_name }}/config/snr"
-  - name: "{{ pool_name }}/config/rdr"
-  - name: "{{ pool_name }}/config/bzr"
-  - name: "{{ pool_name }}/config/jkt"
-  - name: "{{ pool_name }}/config/qbt"
-  # These are important data
-  - name: "{{ pool_name }}/drive/fbr"
-  - name: "{{ pool_name }}/drive/syn"
-  - name: "{{ pool_name }}/drive/ete"
-# Nomad is not fun for stateful workloads
+  # Use following props for them
+  # props: recordsize=1M compression=off exec=off
+
+# Nomad is not so fun for stateful workloads
 nomad_host_volumes:
-  - name: eted
-    path: "{{ pool_mount_point }}/drive/ete"
+  - name: traefik
+    path: "{{ pool_mount_point }}/traefik"
     owner: ubuntu
     group: ubuntu
     mode: u=rwx,g=r,o=r
     read_only: false
-  - name: fbrd
-    path: "{{ pool_mount_point }}/drive/fbr"
+  - name: nextcloud
+    path: "{{ pool_mount_point }}/nextcloud/nextcloud"
+    owner: www-data
+    group: www-data
+    mode: u=rwx,g=r,o=r
+    read_only: false
+  - name: nextcloud_db
+    path: "{{ pool_mount_point }}/nextcloud/db"
     owner: ubuntu
     group: ubuntu
     mode: u=rwx,g=r,o=r
     read_only: false
-  - name: synd
-    path: "{{ pool_mount_point }}/drive/syn"
+  - name: photoprism
+    path: "{{ pool_mount_point }}/photoprism/originals"
     owner: ubuntu
     group: ubuntu
     mode: u=rwx,g=r,o=r
     read_only: false
-  - name: traefikc
-    path: "{{ pool_mount_point }}/config/traefik"
+  - name: photoprism_db
+    path: "{{ pool_mount_point }}/photoprism/db"
     owner: ubuntu
     group: ubuntu
     mode: u=rwx,g=r,o=r
     read_only: false
-  - name: fbrc
-    path: "{{ pool_mount_point }}/config/fbr"
+  - name: photoprism_import
+    path: "{{ pool_mount_point }}/photoprism/import"
     owner: ubuntu
     group: ubuntu
     mode: u=rwx,g=r,o=r
     read_only: false
-  - name: bzrc
-    path: "{{ pool_mount_point }}/config/bzr"
+  - name: photoprism_storage
+    path: "{{ pool_mount_point }}/photoprism/storage"
     owner: ubuntu
     group: ubuntu
     mode: u=rwx,g=r,o=r
-    read_only: false
-  - name: jktc
-    path: "{{ pool_mount_point }}/config/jkt"
-    owner: ubuntu
-    group: ubuntu
-    mode: u=rwx,g=r,o=r
-    read_only: false
-  - name: rdrc
-    path: "{{ pool_mount_point }}/config/rdr"
-    owner: ubuntu
-    group: ubuntu
-    mode: u=rwx,g=r,o=r
-    read_only: false
-  - name: snrc
-    path: "{{ pool_mount_point }}/config/snr"
-    owner: ubuntu
-    group: ubuntu
-    mode: u=rwx,g=r,o=r
-    read_only: false
-  - name: qbtc
-    path: "{{ pool_mount_point }}/config/qbt"
-    owner: ubuntu
-    group: ubuntu
-    mode: u=rwx,g=r,o=r
-    read_only: false
-  - name: flixd
-    path: "{{ pool_mount_point }}/flix/downloads"
-    owner: ubuntu
-    group: ubuntu
-    mode: u=rw,g=r,o=r
-    read_only: false
-  - name: flixt
-    path: "{{ pool_mount_point }}/flix/tv"
-    owner: ubuntu
-    group: ubuntu
-    mode: u=rw,g=r,o=r
-    read_only: false
-  - name: flixm
-    path: "{{ pool_mount_point }}/flix/movies"
-    owner: ubuntu
-    group: ubuntu
-    mode: u=rw,g=r,o=r
     read_only: false
