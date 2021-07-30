@@ -1,8 +1,8 @@
 ---
 # Playbook
 
-- import_playbook: deps.yml
-- import_playbook: tls.yml
+- import_playbook: _deps.yml
+- import_playbook: _tls.yml
 
 - name: Ready nodes (Disable IPv6, APT maintainance, Install Tailscale)
   hosts: all
