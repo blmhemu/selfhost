@@ -1,6 +1,6 @@
 ---
 
-- name: Install nomad
+- name: Make sure directories exists for TLS(s)
   hosts: nomad_instances
   tasks:
     - name: Ensure tls dirs exists for nomad and consul
