@@ -17,12 +17,11 @@
 
    - name: Create nomad cli
       command: >
-        consul tls cert create
+        consul tls cert create -domain=nomad
         -cli
-        -domain=nomad
         -dc={{ nomad_datacenter }}
-        -ca={{ playbook_dir }}/{{ tls_nomad_dir }}/ca/nomad-agent-ca.pem
-        -key={{ playbook_dir }}/{{ tls_nomad_dir }}/ca/nomad-agent-ca-key.pem
+        -ca=../ca/nomad-agent-ca.pem
+        -key=../ca/nomad-agent-ca-key.pem
       args:
         chdir: "{{ tls_nomad_dir }}/cli"
         creates: "{{ nomad_datacenter }}-cli-nomad-0-key.pem"
@@ -37,15 +36,14 @@
 
     - name: Create nomad agent certs
       command: >
-        consul tls cert create
+        consul tls cert create -domain=nomad
         -{{ 'server' if nomad_role != 'client' else 'client' }}
-        -domain=nomad
         -dc={{ nomad_region }}
         -additional-ipaddress={{ ansible_default_ipv4.address }}
         -additional-ipaddress={{ ansible_tailscale0.ipv4.address }}
         -additional-ipaddress={{ ansible_docker0.ipv4.address }}
-        -ca={{ playbook_dir }}/{{ tls_nomad_dir }}/ca/nomad-agent-ca.pem
-        -key={{ playbook_dir }}/{{ tls_nomad_dir }}/ca/nomad-agent-ca-key.pem
+        -ca=../ca/nomad-agent-ca.pem
+        -key=../ca/nomad-agent-ca-key.pem
       args:
         chdir: "{{ tls_nomad_dir }}/{{ inventory_hostname }}"
         creates: "{{ nomad_region }}-{{ 'server' if nomad_role != 'client' else 'client' }}-nomad-0-key.pem"

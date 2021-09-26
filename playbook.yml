@@ -17,11 +17,11 @@
   roles:
     - blmhemu.general.consul
 
-#- name: Setup nomad cluster
-#  hosts: nomad_instances
-#  pre_tasks:
-#    - include: tasks/tls_nomad.yml
-#  role:
-#    - blmhemu.general.nomad
+- name: Setup nomad cluster
+  hosts: nomad_instances
+  pre_tasks:
+    - include: tasks/tls_nomad.yml
+  role:
+    - blmhemu.general.nomad
 
 # Need to have some roles for NAS
