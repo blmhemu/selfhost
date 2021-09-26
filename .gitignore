@@ -1,4 +1,6 @@
 ansible_collections
 roles
 .vscode
+.idea
+.DS_Store
 files/tls

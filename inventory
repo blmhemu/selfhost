@@ -30,3 +30,17 @@ nomad_servers
 nomad_clients
 nomad_both
 
+[consul_servers:vars]
+consul_role=server
+
+[consul_clients:vars]
+consul_role=clients
+
+[nomad_servers:vars]
+nomad_role=server
+
+[nomad_clients:vars]
+nomad_role=clients
+
+[nomad_both:vars]
+nomad_role=both
