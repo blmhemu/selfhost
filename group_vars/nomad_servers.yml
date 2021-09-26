@@ -1,4 +1,0 @@
----
-
-nomad_cert_file: "{{ tls_dir_nomad }}/{{ inventory_hostname }}/global-server-nomad-0.pem"
-nomad_key_file: "{{ tls_dir_nomad }}/{{ inventory_hostname }}/global-server-nomad-0-key.pem"

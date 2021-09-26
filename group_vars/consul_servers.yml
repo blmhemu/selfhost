@@ -1,4 +1,0 @@
----
-
-consul_tls_server_crt: "{{ tls_dir_consul }}/{{ inventory_hostname }}/dc1-server-consul-0.pem"
-consul_tls_server_key: "{{ tls_dir_consul }}/{{ inventory_hostname }}/dc1-server-consul-0-key.pem"

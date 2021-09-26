@@ -1,21 +1,21 @@
 ---
-#
-#- name: Ready nodes
-#  hosts: all
-#  roles:
-#    - role: role-ntp
-#      become: true
-#    - blmhemu.general.bootparams
-#    - blmhemu.general.bootstrap
-#    - role-tailscale
-#    - role-docker
-#
-#- name: Setup consul cluster
-#  hosts: consul_instances
-#  pre_tasks:
-#    - include_tasks: tasks/tls_consul.yml
-#  roles:
-#    - blmhemu.general.consul
+
+- name: Ready nodes
+  hosts: all
+  roles:
+    - role: role-ntp
+      become: true
+    - blmhemu.general.bootparams
+    - blmhemu.general.bootstrap
+    - role-tailscale
+    - role-docker
+
+- name: Setup consul cluster
+  hosts: consul_instances
+  pre_tasks:
+    - include_tasks: tasks/tls_consul.yml
+  roles:
+    - blmhemu.general.consul
 
 - name: Setup nomad cluster
   hosts: nomad_instances
