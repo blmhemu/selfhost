@@ -34,13 +34,13 @@ nomad_both
 consul_role=server
 
 [consul_clients:vars]
-consul_role=clients
+consul_role=client
 
 [nomad_servers:vars]
 nomad_role=server
 
 [nomad_clients:vars]
-nomad_role=clients
+nomad_role=client
 
 [nomad_both:vars]
 nomad_role=both

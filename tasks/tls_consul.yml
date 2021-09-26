@@ -9,19 +9,19 @@
         - "{{ tls_consul_dir }}/ca"
         - "{{ tls_consul_dir }}/cli"
 
-   - name: Create consul CA
+    - name: Create consul CA
       command: consul tls ca create
       args:
         chdir: "{{ tls_consul_dir }}/ca"
         creates: "consul-agent-ca-key.pem"
 
-   - name: Create consul cli
+    - name: Create consul cli
       command: >
         consul tls cert create
         -cli
         -dc={{ consul_datacenter }}
-        -ca={{ playbook_dir }}/{{ tls_consul_dir }}/ca/consul-agent-ca.pem
-        -key={{ playbook_dir }}/{{ tls_consul_dir }}/ca/consul-agent-ca-key.pem
+        -ca=../ca/consul-agent-ca.pem
+        -key=../ca/consul-agent-ca-key.pem
       args:
         chdir: "{{ tls_consul_dir }}/cli"
         creates: "{{ consul_datacenter }}-cli-consul-0-key.pem"
@@ -42,8 +42,8 @@
         -additional-ipaddress={{ ansible_default_ipv4.address }}
         -additional-ipaddress={{ ansible_tailscale0.ipv4.address }}
         -additional-ipaddress={{ ansible_docker0.ipv4.address }}
-        -ca={{ playbook_dir }}/{{ tls_consul_dir }}/ca/consul-agent-ca.pem
-        -key={{ playbook_dir }}/{{ tls_consul_dir }}/ca/consul-agent-ca-key.pem
+        -ca=../ca/consul-agent-ca.pem
+        -key=../ca/consul-agent-ca-key.pem
       args:
         chdir: "{{ tls_consul_dir }}/{{ inventory_hostname }}"
         creates: "{{ consul_datacenter }}-{{ consul_role }}-consul-0-key.pem"
