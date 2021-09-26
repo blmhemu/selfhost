@@ -9,13 +9,13 @@
         - "{{ tls_nomad_dir }}/ca"
         - "{{ tls_nomad_dir }}/cli"
 
-   - name: Create nomad CA
+    - name: Create nomad CA
       command: consul tls ca create -domain=nomad
       args:
         chdir: "{{ tls_nomad_dir }}/ca"
         creates: "nomad-agent-ca-key.pem"
 
-   - name: Create nomad cli
+    - name: Create nomad cli
       command: >
         consul tls cert create -domain=nomad
         -cli
