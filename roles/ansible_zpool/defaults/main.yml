@@ -1,7 +1,0 @@
----
-# defaults file for ansible_zpool
-
-# (Optional) Try to encrypt disk_id
-# disk_id: aaa-bbbbbbbbb-cccccccc
-pool_name: neo
-mount_point: /mnt/{{ pool_name }}

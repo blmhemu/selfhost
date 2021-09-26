@@ -1,5 +1,0 @@
-# Host variables for rpi0
----
-ansible_host: 192.168.0.100
-consul_node_role: bootstrap
-nomad_node_role: server

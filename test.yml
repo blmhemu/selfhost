@@ -1,7 +1,0 @@
----
-
-- name: Create required zfs datasets / filesystems
-  hosts: nas
-  tasks:
-    - debug:
-        msg: "{{ansible_tailscale0}} {{ansible_default_ipv4.address}}"

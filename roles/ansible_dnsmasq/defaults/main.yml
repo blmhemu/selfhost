@@ -1,9 +1,0 @@
----
-# defaults file for ansible_dnsmasq
-dnsmasq_config: |
-  no-resolv
-  # For remaining
-  server=1.1.1.1
-  server=8.8.8.8
-  interface={{ ansible_default_ipv4.interface }}
-  bind-dynamic

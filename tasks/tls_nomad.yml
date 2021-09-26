@@ -1,0 +1,50 @@
+---
+
+- block:
+    - name: Ensure nomad tls dirs exists
+      file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ tls_nomad_dir }}/ca"
+        - "{{ tls_nomad_dir }}/cli"
+
+   - name: Create nomad CA
+      command: consul tls ca create
+      args:
+        chdir: "{{ tls_nomad_dir }}/ca"
+        creates: "nomad-agent-ca-key.pem"
+
+   - name: Create nomad cli
+      command: >
+        consul tls cert create
+        -cli
+        -dc={{ nomad_datacenter }}
+        -ca={{ playbook_dir }}/{{ tls_nomad_dir }}/ca/nomad-agent-ca.pem
+        -key={{ playbook_dir }}/{{ tls_nomad_dir }}/ca/nomad-agent-ca-key.pem
+      args:
+        chdir: "{{ tls_nomad_dir }}/cli"
+        creates: "{{ nomad_datacenter }}-cli-nomad-0-key.pem"
+  run_once: true
+  delegate_to: 127.0.0.1
+
+- block:
+    - name: Ensure nomad agent tls dirs exists
+      file:
+        path: "{{ tls_nomad_dir }}/{{ inventory_hostname }}"
+        state: directory
+
+    - name: Create nomad agent certs
+      command: >
+        consul tls cert create
+        -{{ 'server' if nomad_role != 'client' else 'client' }}
+        -dc={{ nomad_datacenter }}
+        -additional-ipaddress={{ ansible_default_ipv4.address }}
+        -additional-ipaddress={{ ansible_tailscale0.ipv4.address }}
+        -additional-ipaddress={{ ansible_docker0.ipv4.address }}
+        -ca={{ playbook_dir }}/{{ tls_nomad_dir }}/ca/nomad-agent-ca.pem
+        -key={{ playbook_dir }}/{{ tls_nomad_dir }}/ca/nomad-agent-ca-key.pem
+      args:
+        chdir: "{{ tls_nomad_dir }}/{{ inventory_hostname }}"
+        creates: "{{ nomad_datacenter }}-{{ 'server' if nomad_role != 'client' else 'client' }}-nomad-0-key.pem"
+  delegate_to: 127.0.0.1

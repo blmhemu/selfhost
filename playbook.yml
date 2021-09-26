@@ -1,0 +1,20 @@
+---
+
+- name: Ready nodes
+  hosts: all
+  roles:
+    - role: role-ntp
+      become: true
+    - blmhemu.general.bootparams
+    - blmhemu.general.bootstrap
+    - role-tailscale
+    - role-docker
+
+- name: Setup consul cluster
+  hosts: consul_instances
+
+- name: Setup nomad cluster
+  hosts: nomad_instances
+
+# Need to have some roles for NAS
+

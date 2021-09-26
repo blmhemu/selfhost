@@ -1,5 +1,0 @@
-# When doing a reset, do this to save data
-
-- name: Export pool
-  become: true
-  command: zpool export {{ pool_name }}

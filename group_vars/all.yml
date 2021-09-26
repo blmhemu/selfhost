@@ -1,6 +1,19 @@
 ---
 
-apt_force_ipv4: true
+# NTP
+ntp_timezone: Asia/Kolkata
+ntp_cron_handler_enabled: true
+
+# Bootparams
+boot_params_present:
+  - systemd.unified_cgroup_hierarchy=1
+
+# Docker
+docker_add_nonroot_users: true
+docker_nonroot_users:
+  - ubuntu
+
+# Tailscale
 tailscale_auth_key: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   37623032323963306134626461323661396436366664323136333438353335653665363837316261
@@ -9,10 +22,9 @@ tailscale_auth_key: !vault |
   3663333965663061320a336135366261373636356537666262656436653563666537373438363665
   34323662613637303534343066623365396430326365613338653638633463313664
 
-tls_dir: "tls"
-tls_dir_nomad: "{{ tls_dir }}/nomad"
-tls_dir_nomad_ca: "{{ tls_dir_nomad }}/ca"
-tls_dir_nomad_cli: "{{ tls_dir_nomad }}/cli"
-tls_dir_consul: "{{ tls_dir }}/consul"
-tls_dir_consul_ca: "{{ tls_dir_consul }}/ca"
-tls_dir_consul_cli: "{{ tls_dir_consul }}/cli"
+# CNI
+
+# TLS
+tls_base_dir: files/tls
+tls_consul_dir: {{ tls_base_dir }}/consul
+tls_nomad_dir: {{ tls_base_dir }}/nomad
