@@ -4,8 +4,10 @@ btrfs_disk: /dev/disk/by-id/ata-ST6000VN0033-2EE110_ZAD9J1J4
 btrfs_label: neo
 btrfs_mount_dir: /mnt/{{ btrfs_label }}
 btrfs_subvols:
-  - nomad
-  - sed
+  - name: nomad
+    owner: nobody
+    group: nogroup
+    mode: 777
 
 nfsserver_exports:
   - share: "{{ btrfs_mount_dir }}/nomad"
@@ -15,3 +17,5 @@ nfsserver_exports:
           - rw
           - async
           - no_subtree_check
+          - root_squash
+          - insecure # Not really insecure. Read https://security.stackexchange.com/questions/246527/what-is-insecure-about-the-insecure-option-of-nfs-exports

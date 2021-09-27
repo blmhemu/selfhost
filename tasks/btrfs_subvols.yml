@@ -4,10 +4,18 @@
 - name: Check if subvol already exists
   become: true
   stat:
-    path: "{{ btrfs_mount_dir }}/{{ item }}"
+    path: "{{ btrfs_mount_dir }}/{{ item.name }}"
   register: subvol_stat
 
-- name: Create subvols
+- name: Create subvol
   become: true
-  command: btrfs subvolume create "{{ btrfs_mount_dir }}/{{ item }}"
+  command: btrfs subvolume create "{{ btrfs_mount_dir }}/{{ item.name }}"
   when: not subvol_stat.stat.exists
+
+- name: Set permissions for subvol
+  become: true
+  file:
+    path: "{{ btrfs_mount_dir }}/{{ item.name }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"

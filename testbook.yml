@@ -1,9 +1,12 @@
 ---
 
-- name: Ready NAS
+- name: Ready NFS Server
   hosts: nas0
-  tasks:
+  pre_tasks:
     - include_tasks: tasks/btrfs.yml
+  roles:
+    - role: robertdebock.roles.nfsserver
+      become: true
 
 #  roles:
 #    - role: role-ntp

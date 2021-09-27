@@ -27,8 +27,4 @@
 # Need to have some roles for NAS
 
 # NFS Server
-- name: Ready NFS Server
-  hosts: nfs_servers
-  roles:
-    - role: robertdebock.roles.nfsserver
-      become: true
+
