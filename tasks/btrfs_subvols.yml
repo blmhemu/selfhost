@@ -2,7 +2,7 @@
 # Meant to be used in btrfs.yml
 
 - name: Check if subvol already exists
-#      become: true
+  become: true
   stat:
     path: "{{ btrfs_mount_dir }}/{{ item }}"
   register: subvol_stat
