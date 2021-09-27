@@ -1,0 +1,31 @@
+---
+
+- name: Install required packages
+  become: true
+  apt:
+    name: btrfs-progs
+    state: present
+    update_cache: true
+    force: false # Do not run if already exists
+
+# TODO: Label is hardcoded for now. Supports only single disk (no RAID)
+- name: Mkfs on the required disk
+  become: true
+  community.general.filesystem:
+    fstype: btrfs
+    dev: "{{ btrfs_disk }}"
+    opts: --label neo
+
+- name: Mount and put in fstab
+  become: true
+  ansible.posix.mount:
+    path: "{{ btrfs_mount_dir }}"
+    src: LABEL="{{ btrfs_label }}"
+    fstype: btrfs
+    opts: defaults,noatime,compress=zstd
+    boot: true
+    state: mounted
+
+- name: Ensure subvols exist
+  include_tasks: btrfs_subvols.yml
+  with_items: "{{ btrfs_subvols }}"

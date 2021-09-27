@@ -1,0 +1,30 @@
+---
+
+- name: Ready NAS
+  hosts: nas0
+  tasks:
+    - include_tasks: tasks/btrfs.yml
+
+#  roles:
+#    - role: role-ntp
+#      become: true
+#    - blmhemu.general.bootparams
+#    - blmhemu.general.bootstrap
+#    - role-tailscale
+#    - role-docker
+
+#- name: Setup consul cluster
+#  hosts: consul_instances
+#  pre_tasks:
+#    - include_tasks: tasks/tls_consul.yml
+#  roles:
+#    - blmhemu.general.consul
+#
+#- name: Setup nomad cluster
+#  hosts: nomad_instances
+#  pre_tasks:
+#    - include_tasks: tasks/tls_nomad.yml
+#  roles:
+#    - blmhemu.general.nomad
+
+# Need to have some roles for NAS

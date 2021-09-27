@@ -1,0 +1,13 @@
+---
+# Meant to be used in btrfs.yml
+
+- name: Check if subvol already exists
+#      become: true
+  stat:
+    path: "{{ btrfs_mount_dir }}/{{ item }}"
+  register: subvol_stat
+
+- name: Create subvols
+  become: true
+  command: btrfs subvolume create "{{ btrfs_mount_dir }}/{{ item }}"
+  when: not subvol_stat.stat.exists

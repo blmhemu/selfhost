@@ -7,6 +7,9 @@ rpi0
 [nas]
 nas0
 
+[nfs_servers]
+nas0
+
 [consul_servers]
 rpi0
 

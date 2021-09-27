@@ -10,14 +10,14 @@
     - role-tailscale
     - role-docker
 
-- name: Setup consul cluster
+- name: Ready consul cluster
   hosts: consul_instances
   pre_tasks:
     - include_tasks: tasks/tls_consul.yml
   roles:
     - blmhemu.general.consul
 
-- name: Setup nomad cluster
+- name: Ready nomad cluster
   hosts: nomad_instances
   pre_tasks:
     - include_tasks: tasks/tls_nomad.yml
@@ -25,3 +25,10 @@
     - blmhemu.general.nomad
 
 # Need to have some roles for NAS
+
+# NFS Server
+- name: Ready NFS Server
+  hosts: nfs_servers
+  roles:
+    - role: robertdebock.roles.nfsserver
+      become: true
