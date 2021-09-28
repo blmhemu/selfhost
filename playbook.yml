@@ -2,12 +2,13 @@
 
 - name: Ready nodes
   hosts: all
+  vars_files: vault/common.yml
   roles:
     - role: role-ntp
       become: true
     - blmhemu.general.bootparams
     - blmhemu.general.bootstrap
-    - role-tailscale
+    - role: role-tailscale
     - role-docker
 
 # NFS server and client

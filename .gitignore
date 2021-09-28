@@ -1,6 +1,8 @@
 ansible_collections
 roles
 files/tls
+# Ignore vault for now. Need to write git hooks.
+vault
 .vscode
 .idea
 .DS_Store

@@ -1,0 +1,130 @@
+job "traefik" {
+  region      = "{{ nomad_region }}"
+  datacenters = ["{{ nomad_datacenter }}"]
+  type        = "service"
+  group "traefik" {
+    count = 1
+    network {
+      port "ts_http" {
+        static        = 80
+        host_network  = "tailscale"
+      }
+      port "ts_https" {
+        static        = 443
+        host_network  = "tailscale"
+      }
+      # Health check for consul. No need to expose outside
+      port "ping" {
+        host_network  = "localhost"
+      }
+    }
+    service {
+      name  = "traefik"
+      port  = "ts_https"
+      tags  = [
+        "traefik.enable=true",
+        "traefik.http.routers.traefikdash.rule=Host(`traefik.{{ base_domain }}`)",
+        "traefik.http.routers.traefikdash.service=api@internal",
+      ]
+      check {
+        name      = "alive"
+        type      = "http"
+        port      = "ping"
+        path      = "/ping"
+        interval  = "10s"
+        timeout   = "2s"
+      }
+    }
+    volume "traefik" {
+      type      = "host"
+      source    = "traefik"
+      read_only = false
+    }
+    task "traefik" {
+      driver = "docker"
+      config {
+        image = "traefik:v2.5"
+        ports = ["ts_http", "ts_https", "ping"]
+        args  = [
+          # Permanent http -> https redirect
+          "--entryPoints.web.address=:80",
+          "--entrypoints.web.http.redirections.entryPoint.to=websecure",
+          "--entrypoints.web.http.redirections.entryPoint.scheme=https",
+          "--entrypoints.web.http.redirections.entrypoint.permanent=true",
+          # Https
+          "--entryPoints.websecure.address=:443",
+          "--entryPoints.websecure.transport.lifeCycle.requestAcceptGraceTimeout=15s",
+          "--entryPoints.websecure.transport.lifeCycle.graceTimeOut=15s",
+          "--entryPoints.websecure.http.tls=true",
+          "--entryPoints.websecure.http.tls.certResolver=porkbunresolver",
+          "--entrypoints.websecure.http.tls.domains[0].main=*.{{ base_domain }}",
+          "--entrypoints.websecure.http.tls.domains[0].sans=*.{{ base_domain }}",
+          # TLS Certs
+          "--certificatesresolvers.porkbunresolver.acme.email={{ acme_email }}",
+          "--certificatesresolvers.porkbunresolver.acme.storage=/tls/acme.json",
+          "--certificatesresolvers.porkbunresolver.acme.dnschallenge=true",
+          "--certificatesresolvers.porkbunresolver.acme.dnschallenge.provider=porkbun",
+          # Ping
+          "--entryPoints.ping.address=:${NOMAD_PORT_ping}",
+          "--entryPoints.ping.transport.lifeCycle.requestAcceptGraceTimeout=15s",
+          "--entryPoints.ping.transport.lifeCycle.graceTimeOut=15s",
+          # Dashboard
+          "--api=true",
+          "--api.dashboard=true",
+          # Healthcheck
+          "--ping=true",
+          "--ping.entryPoint=ping",
+          # Fetch service info from consul
+          "--providers.consulcatalog=true",
+          "--providers.consulcatalog.endpoint.address=172.17.0.1:8501",
+          "--providers.consulcatalog.endpoint.scheme=https",
+          "--providers.consulcatalog.endpoint.tls.ca=/etc/traefik/ssl/ca.pem",
+          "--providers.consulcatalog.endpoint.tls.cert=/etc/traefik/ssl/cert.pem",
+          "--providers.consulcatalog.endpoint.tls.key=/etc/traefik/ssl/key.pem",
+          "--providers.consulcatalog.prefix=traefik",
+          # File providers
+
+          # Accesslogs
+          "--accesslog=false",
+        ]
+        volumes = [
+          "local/ca.pem:/etc/traefik/ssl/ca.pem",
+          "local/cert.pem:/etc/traefik/ssl/cert.pem",
+          "local/key.pem:/etc/traefik/ssl/key.pem",
+        ]
+      }
+      volume_mount {
+        volume      = "traefik"
+        destination = "/tls"
+        read_only   = false
+      }
+      env {
+        TZ                      = "{{ ntp_timezone }}"
+        PORKBUN_API_KEY         = "{{ porkbun_apikey }}"
+        PORKBUN_SECRET_API_KEY  = "{{ porkbun_secret_apikey }}"
+      }
+      template {
+        data = <<EOF
+{{ lookup('file', 'files/tls/consul/ca/consul-agent-ca.pem') }}
+        EOF
+        destination = "local/ca.pem"
+      }
+      template {
+        data = <<EOF
+{{ lookup('file', 'files/tls/consul/cli/dc1-cli-consul-0.pem') }}
+        EOF
+        destination = "local/cert.pem"
+      }
+      template {
+        data = <<EOF
+{{ lookup('file', 'files/tls/consul/cli/dc1-cli-consul-0-key.pem') }}
+        EOF
+        destination = "local/key.pem"
+      }
+      resources {
+        cpu    = 500
+        memory = 256
+      }
+    }
+  }
+}

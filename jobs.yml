@@ -1,8 +1,21 @@
 ---
 
-- name: Ready nomad cluster
-  hosts: nomad_server
-  pre_tasks:
-    - include_tasks: tasks/tls_nomad.yml
-  roles:
-    - blmhemu.general.nomad
+- name: Deploy all jobs
+  hosts: nomad_instances
+  vars_files: vault/jobs.yml
+  tasks:
+    - name: Deploy nomad jobs
+      community.general.nomad_job:
+        host: "{{ ansible_default_ipv4.address }}"
+        use_ssl: true
+        validate_certs: false
+        client_cert: "files/tls/nomad/cli/global-cli-nomad-0.pem"
+        client_key: "files/tls/nomad/cli/global-cli-nomad-0-key.pem"
+        state: present
+        content: "{{ lookup('template', '{{ item }}') }}"
+        timeout: 120
+      with_fileglob:
+        - jobs/*.nomad
+        - jobs/*.nomad.j2
+      delegate_to: 127.0.0.1
+      run_once: true
