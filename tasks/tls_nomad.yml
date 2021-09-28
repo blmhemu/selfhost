@@ -19,12 +19,12 @@
       command: >
         consul tls cert create -domain=nomad
         -cli
-        -dc={{ nomad_datacenter }}
+        -dc={{ nomad_region }}
         -ca=../ca/nomad-agent-ca.pem
         -key=../ca/nomad-agent-ca-key.pem
       args:
         chdir: "{{ tls_nomad_dir }}/cli"
-        creates: "{{ nomad_datacenter }}-cli-nomad-0-key.pem"
+        creates: "{{ nomad_region }}-cli-nomad-0-key.pem"
   run_once: true
   delegate_to: 127.0.0.1
 
