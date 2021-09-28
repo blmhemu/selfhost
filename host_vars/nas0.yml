@@ -8,6 +8,7 @@ btrfs_subvols:
     owner: nobody
     group: nogroup
     mode: 777
+    # Optionally, state: "present" or "absent"
 
 nfsserver_exports:
   - share: "{{ btrfs_mount_dir }}/nomad"
@@ -16,6 +17,6 @@ nfsserver_exports:
         options:
           - rw
           - async
-          - no_subtree_check
           - root_squash
+          - no_subtree_check
           - insecure # Not really insecure. Read https://security.stackexchange.com/questions/246527/what-is-insecure-about-the-insecure-option-of-nfs-exports

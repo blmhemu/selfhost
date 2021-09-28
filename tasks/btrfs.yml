@@ -28,4 +28,6 @@
 
 - name: Ensure subvols exist
   include_tasks: btrfs_subvols.yml
-  with_items: "{{ btrfs_subvols }}"
+  loop: "{{ btrfs_subvols }}"
+  loop_control:
+    label: "{{ item.name }}"

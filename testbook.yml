@@ -8,13 +8,12 @@
     - role: robertdebock.roles.nfsserver
       become: true
 
+#- name: Mount nfs on nomad instances
+#  hosts: nomad_instances | difference('nas0')
+#  tasks:
+#    - debug: var=ansible_host
 #  roles:
-#    - role: role-ntp
-#      become: true
-#    - blmhemu.general.bootparams
-#    - blmhemu.general.bootstrap
-#    - role-tailscale
-#    - role-docker
+#    - role: robertdebock.roles.nfsserver
 
 #- name: Setup consul cluster
 #  hosts: consul_instances
