@@ -2,7 +2,6 @@
 
 - name: Ready nodes
   hosts: all
-  vars_files: vault/common.yml
   roles:
     - role: role-ntp
       become: true

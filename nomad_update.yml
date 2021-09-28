@@ -1,0 +1,13 @@
+---
+
+- name: icl vars
+  hosts: all
+  tasks:
+    - debug: var=consul_encrypt_key
+
+#- name: Ready nomad cluster
+#  hosts: nomad_instances
+#  pre_tasks:
+#    - include_tasks: tasks/tls_nomad.yml
+#  roles:
+#    - blmhemu.general.nomad

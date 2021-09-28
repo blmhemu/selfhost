@@ -83,7 +83,7 @@ job "traefik" {
           "--providers.consulcatalog.endpoint.tls.key=/etc/traefik/ssl/key.pem",
           "--providers.consulcatalog.prefix=traefik",
           # File providers
-
+          "--providers.file.filename=/etc/traefik/files/provider.toml",
           # Accesslogs
           "--accesslog=false",
         ]
@@ -91,6 +91,7 @@ job "traefik" {
           "local/ca.pem:/etc/traefik/ssl/ca.pem",
           "local/cert.pem:/etc/traefik/ssl/cert.pem",
           "local/key.pem:/etc/traefik/ssl/key.pem",
+          "local/provider.toml:/etc/traefik/files/provider.toml",
         ]
       }
       volume_mount {
@@ -120,6 +121,17 @@ job "traefik" {
 {{ lookup('file', 'files/tls/consul/cli/dc1-cli-consul-0-key.pem') }}
         EOF
         destination = "local/key.pem"
+      }
+      template {
+        data = <<EOF
+[http]
+  [http.services]
+    [http.services.nas]
+      [http.services.nas.loadBalancer]
+        [[http.services.nas.loadBalancer.servers]]
+          url = "http://192.168.0.1/"
+        EOF
+        destination = "local/provider.toml"
       }
       resources {
         cpu    = 500

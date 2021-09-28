@@ -2,7 +2,7 @@
 
 - name: Deploy all jobs
   hosts: nomad_instances
-  vars_files: vault/jobs.yml
+  vars_files: vault/vars.yml
   tasks:
     - name: Deploy nomad jobs
       community.general.nomad_job:
