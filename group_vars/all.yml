@@ -48,6 +48,19 @@ nomad_consul_ca_src_file: "{{ tls_consul_dir }}/ca/consul-agent-ca.pem"
 nomad_consul_cert_src_file: "{{ tls_consul_dir }}/cli/{{ consul_datacenter }}-cli-consul-0.pem"
 nomad_consul_key_src_file: "{{ tls_consul_dir }}/cli/{{ consul_datacenter }}-cli-consul-0-key.pem"
 
+nomad_host_volumes:
+  - name: nfs_nomad
+    path: /mnt/neo/nomad/traefik
+    read_only: false
+
+nomad_host_networks:
+  - name: private
+    cidr_or_interface: "{{ ansible_default_ipv4.interface }}"
+    reserved_ports: [20]
+  - name: tailscale
+    cidr_or_interface: "{{ ansible_tailscale0.device }}"
+    reserved_ports: [20]
+
 # NFS
 autofs_maps:
   - name: nfs_nomad
@@ -56,7 +69,7 @@ autofs_maps:
       - "--timeout 60"
     directories:
       - path: nomad
-        server: "192.168.0.101:/mnt/neo/nomad" # TODO: Do not hardcode the IP
+        server: "192.168.0.101:/mnt/neo/nomad" # TODO: Don't hardcode IP
         options:
           - fstype=nfs4
           - rw

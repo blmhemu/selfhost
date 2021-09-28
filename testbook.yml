@@ -1,5 +1,20 @@
 ---
 
+#- name: Ready nomad cluster
+#  gather_facts: no
+#  hosts: rpi0
+#  pre_tasks:
+#    - debug: msg="{{ [10,11,12] | join(',') }}"
+#  roles:
+#    - blmhemu.general.nomad
+
+- name: Ready nomad cluster
+  hosts: nomad_instances
+  pre_tasks:
+    - include_tasks: tasks/tls_nomad.yml
+  roles:
+    - blmhemu.general.nomad
+
 #- name: Setup consul cluster
 #  hosts: consul_instances
 #  pre_tasks:
