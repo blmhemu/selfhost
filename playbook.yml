@@ -10,6 +10,21 @@
     - role-tailscale
     - role-docker
 
+# NFS server and client
+- name: Ready NFS Server
+  hosts: nas0
+  pre_tasks:
+    - include_tasks: tasks/btrfs.yml
+  roles:
+    - role: robertdebock.roles.nfsserver
+      become: true
+
+- name: Mount nfs on nomad clients
+  hosts: nomad_clients:!nas0
+  roles:
+    - role: robertdebock.roles.autofs
+      become: true
+
 - name: Ready consul cluster
   hosts: consul_instances
   pre_tasks:
@@ -23,8 +38,3 @@
     - include_tasks: tasks/tls_nomad.yml
   roles:
     - blmhemu.general.nomad
-
-# Need to have some roles for NAS
-
-# NFS Server
-

@@ -13,22 +13,27 @@ rpi0
 [consul_clients]
 nas0
 
-[consul_instances:children]
-consul_servers
-consul_clients
+[nomad_both]
+rpi0
 
 [nomad_servers]
 
 [nomad_clients]
 nas0
 
-[nomad_both]
-rpi0
+[nomad_servers:children]
+nomad_both
+
+[nomad_clients:children]
+nomad_both
 
 [nomad_instances:children]
 nomad_servers
 nomad_clients
-nomad_both
+
+[consul_instances:children]
+consul_servers
+consul_clients
 
 [consul_servers:vars]
 consul_role=server

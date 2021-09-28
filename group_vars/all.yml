@@ -47,3 +47,21 @@ nomad_key_src_file: "{{ tls_nomad_dir }}/{{ inventory_hostname }}/{{ nomad_regio
 nomad_consul_ca_src_file: "{{ tls_consul_dir }}/ca/consul-agent-ca.pem"
 nomad_consul_cert_src_file: "{{ tls_consul_dir }}/cli/{{ consul_datacenter }}-cli-consul-0.pem"
 nomad_consul_key_src_file: "{{ tls_consul_dir }}/cli/{{ consul_datacenter }}-cli-consul-0-key.pem"
+
+# NFS
+autofs_maps:
+  - name: nfs_nomad
+    mountpoint: /mnt/neo
+    options:
+      - "--timeout 60"
+    directories:
+      - path: nomad
+        server: "192.168.0.101:/mnt/neo/nomad" # TODO: Do not hardcode the IP
+        options:
+          - fstype=nfs4
+          - rw
+          - hard
+          - intr
+          - nodev
+          - nosuid
+          - async
