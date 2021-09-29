@@ -15,6 +15,7 @@
   hosts: nas0
   pre_tasks:
     - include_tasks: tasks/btrfs.yml
+    - include_tasks: tasks/nfs_dirs.yml
   roles:
     - role: robertdebock.roles.nfsserver
       become: true

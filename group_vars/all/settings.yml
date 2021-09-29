@@ -47,7 +47,6 @@ nomad_host_volumes:
   - name: traefik
     path: /mnt/neo/nomad/traefik
     read_only: false
-    mode: "0777"
 
 nomad_host_networks:
   - name: private
