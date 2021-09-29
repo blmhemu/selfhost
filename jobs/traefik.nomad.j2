@@ -82,8 +82,6 @@ job "traefik" {
           "--providers.consulcatalog.endpoint.tls.cert=/etc/traefik/ssl/cert.pem",
           "--providers.consulcatalog.endpoint.tls.key=/etc/traefik/ssl/key.pem",
           "--providers.consulcatalog.prefix=traefik",
-          # File providers
-          "--providers.file.filename=/etc/traefik/files/provider.toml",
           # Accesslogs
           "--accesslog=false",
         ]
