@@ -32,6 +32,18 @@ consul_ca_src_file: "{{ tls_consul_dir }}/ca/consul-agent-ca.pem"
 consul_cert_src_file: "{{ tls_consul_dir }}/{{ inventory_hostname }}/{{ consul_datacenter }}-{{ consul_role }}-consul-0.pem"
 consul_key_src_file: "{{ tls_consul_dir }}/{{ inventory_hostname }}/{{ consul_datacenter }}-{{ consul_role }}-consul-0-key.pem"
 
+# Dnsmasq
+dnsmasq_config: |
+  no-resolv
+  # For consul
+  server=/consul/127.0.0.1#8600
+  # For remaining
+  server=1.1.1.1
+  server=8.8.8.8
+  interface=lo
+  interface=docker0
+  bind-dynamic
+
 # Nomad
 nomad_version: 1.1.5
 nomad_region: global

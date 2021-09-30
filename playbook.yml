@@ -7,7 +7,7 @@
       become: true
     - blmhemu.general.bootparams
     - blmhemu.general.bootstrap
-    - role: role-tailscale
+    - role-tailscale
     - role-docker
 
 # NFS server and client
@@ -32,6 +32,7 @@
     - include_tasks: tasks/tls_consul.yml
   roles:
     - blmhemu.general.consul
+    - blmhemu.general.dnsmasq
 
 - name: Ready nomad cluster
   hosts: nomad_instances
