@@ -44,6 +44,11 @@ dnsmasq_config: |
   interface=docker0
   bind-dynamic
 
+resolv_config: |
+  nameserver 127.0.0.1
+  nameserver {{ ansible_docker0.ipv4.address }}
+  options trust-ad
+
 # Nomad
 nomad_version: 1.1.5
 nomad_region: global

@@ -71,6 +71,7 @@ job "traefik" {
           # Dashboard
           "--api=true",
           "--api.dashboard=true",
+          "--pilot.dashboard=false",
           # Healthcheck
           "--ping=true",
           "--ping.entryPoint=ping",
@@ -82,6 +83,8 @@ job "traefik" {
           "--providers.consulcatalog.endpoint.tls.cert=/etc/traefik/ssl/cert.pem",
           "--providers.consulcatalog.endpoint.tls.key=/etc/traefik/ssl/key.pem",
           "--providers.consulcatalog.prefix=traefik",
+          # File provider
+          "--providers.file.filename=/etc/traefik/files/provider.yml",
           # Accesslogs
           "--accesslog=false",
         ]
@@ -89,6 +92,7 @@ job "traefik" {
           "local/ca.pem:/etc/traefik/ssl/ca.pem",
           "local/cert.pem:/etc/traefik/ssl/cert.pem",
           "local/key.pem:/etc/traefik/ssl/key.pem",
+          "local/provider.yml:/etc/traefik/files/provider.yml"
         ]
       }
       volume_mount {
@@ -118,6 +122,24 @@ job "traefik" {
 {{ lookup('file', 'files/tls/consul/cli/dc1-cli-consul-0-key.pem') }}
         EOF
         destination = "local/key.pem"
+      }
+      template {
+        data = <<EOF
+tcp:
+  routers:
+    nomad_router:
+      rule: "HostSNI(`nomad.{{ base_domain }}`)"
+      service: nomad
+      # will terminate the TLS request by default
+      tls:
+        passthrough: true
+  services:
+    nomad:
+      loadBalancer:
+        servers:
+          - address: "nomad.service.consul:4646"
+        EOF
+        destination = "local/provider.yml"
       }
       resources {
         cpu    = 500
