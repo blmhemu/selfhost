@@ -84,7 +84,7 @@ job "traefik" {
           "--providers.consulcatalog.endpoint.tls.key=/etc/traefik/ssl/key.pem",
           "--providers.consulcatalog.prefix=traefik",
           # File provider
-          "--providers.file.filename=/etc/traefik/files/provider.yml",
+          "--providers.file.filename=/etc/traefik/files/provider.toml",
           # Accesslogs
           "--accesslog=false",
         ]
@@ -92,7 +92,7 @@ job "traefik" {
           "local/ca.pem:/etc/traefik/ssl/ca.pem",
           "local/cert.pem:/etc/traefik/ssl/cert.pem",
           "local/key.pem:/etc/traefik/ssl/key.pem",
-          "local/provider.yml:/etc/traefik/files/provider.yml"
+          "local/provider.toml:/etc/traefik/files/provider.toml"
         ]
       }
       volume_mount {
@@ -125,21 +125,29 @@ job "traefik" {
       }
       template {
         data = <<EOF
-tcp:
-  routers:
-    nomad_router:
-      rule: "HostSNI(`nomad.{{ base_domain }}`)"
-      service: nomad
-      # will terminate the TLS request by default
-      tls:
-        passthrough: true
-  services:
-    nomad:
-      loadBalancer:
-        servers:
-          - address: "nomad.service.consul:4646"
+# Services
+[tcp.services]
+  [tcp.services.nomad.loadBalancer]
+    [[tcp.services.nomad.loadBalancer.servers]]
+      address = "nomad.service.consul:4646"
+  [tcp.services.consul.loadBalancer]
+    [[tcp.services.consul.loadBalancer.servers]]
+      address = "consul.service.consul:8501"
+
+# Routers
+[tcp.routers]
+  [tcp.routers.nomad]
+    rule = "HostSNI(`nomad.{{ base_domain }}`)"
+    service = "nomad"
+    [tcp.routers.nomad.tls]
+      passthrough = true
+  [tcp.routers.consul]
+    rule = "HostSNI(`consul.{{ base_domain }}`)"
+    service = "consul"
+    [tcp.routers.consul.tls]
+      passthrough = true
         EOF
-        destination = "local/provider.yml"
+        destination = "local/provider.toml"
       }
       resources {
         cpu    = 500
