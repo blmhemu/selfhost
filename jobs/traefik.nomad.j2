@@ -19,7 +19,7 @@ job "traefik" {
       }
     }
     service {
-      name  = "traefik"
+      name  = "{{ nomad_lb_service }}"
       port  = "ts_https"
       tags  = [
         "traefik.enable=true",

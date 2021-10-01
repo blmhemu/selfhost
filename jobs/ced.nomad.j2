@@ -1,0 +1,57 @@
+job "ced" {
+  region      = "{{ nomad_region }}"
+  datacenters = ["{{ nomad_datacenter }}"]
+  type        = "service"
+  group "ced" {
+    task "ced" {
+      driver = "docker"
+      config {
+        image   = "blmhemu/ced:0.3.0"
+        volumes = [
+          "local/ced.properties:/etc/ced/ced.properties",
+          "local/ca.pem:/etc/ced/ssl/ca.pem",
+          "local/cert.pem:/etc/ced/ssl/cert.pem",
+          "local/key.pem:/etc/ced/ssl/key.pem",
+        ]
+      }
+      template {
+        data = <<EOF
+service = {{ nomad_lb_service }}
+consul.addr = 172.17.0.1:8501
+consul.scheme = https
+consul.cafile = /etc/ced/ssl/ca.pem
+consul.certfile = /etc/ced/ssl/cert.pem
+consul.keyfile = /etc/ced/ssl/key.pem
+dns.backend = porkbun
+dns.porkbun.apikey = {{ porkbun_apikey }}
+dns.porkbun.secretapikey = {{ porkbun_secret_apikey }}
+dns.porkbun.domain = {{ base_domain }}
+dns.porkbun.name = *
+EOF
+        destination = "local/ced.properties"
+      }
+      template {
+        data = <<EOF
+{{ lookup('file', 'tls/consul/ca/consul-agent-ca.pem') }}
+        EOF
+        destination = "local/ca.pem"
+      }
+      template {
+        data = <<EOF
+{{ lookup('file', 'tls/consul/cli/dc1-cli-consul-0.pem') }}
+        EOF
+        destination = "local/cert.pem"
+      }
+      template {
+        data = <<EOF
+{{ lookup('file', 'tls/consul/cli/dc1-cli-consul-0-key.pem') }}
+        EOF
+        destination = "local/key.pem"
+      }
+      resources {
+        cpu    = 50
+        memory = 32
+      }
+    }
+  }
+}
