@@ -6,7 +6,7 @@
     - include_tasks: tasks/nfs_dirs.yml
 
 - name: Ready nomad cluster
-  hosts: rpi0
+  hosts: nomad_instances
   pre_tasks:
     - include_tasks: tasks/tls_nomad.yml
   roles:
