@@ -17,6 +17,7 @@ job "traefik" {
       port "ping" {
         host_network  = "localhost"
       }
+      port "metrics" { }
     }
     service {
       name  = "{{ nomad_lb_service }}"
@@ -27,7 +28,20 @@ job "traefik" {
         "traefik.http.routers.traefikdash.service=api@internal",
       ]
       check {
-        name      = "alive"
+        name      = "Ping"
+        type      = "http"
+        port      = "ping"
+        path      = "/ping"
+        interval  = "10s"
+        timeout   = "2s"
+      }
+    }
+    service {
+      name  = "{{ nomad_lb_service }}-metrics"
+      port  = "metrics"
+      tags  = ["metrics", "prometheus"]
+      check {
+        name      = "Ping"
         type      = "http"
         port      = "ping"
         path      = "/ping"
@@ -44,7 +58,7 @@ job "traefik" {
       driver = "docker"
       config {
         image = "traefik:v2.5"
-        ports = ["ts_http", "ts_https", "ping"]
+        ports = ["ts_http", "ts_https", "ping", "metrics"]
         args  = [
           # Permanent http -> https redirect
           "--entryPoints.web.address=:80",
@@ -85,6 +99,10 @@ job "traefik" {
           "--providers.consulcatalog.prefix=traefik",
           # File provider
           "--providers.file.filename=/etc/traefik/files/provider.toml",
+          # Metrics
+          "--metrics.prometheus=true",
+          "--entryPoints.metrics.address=:${NOMAD_PORT_metrics}",
+          "--metrics.prometheus.entryPoint=metrics",
           # Accesslogs
           "--accesslog=false",
         ]
