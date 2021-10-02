@@ -5,16 +5,19 @@ job "monitoring" {
   group "monitoring" {
     count = 1
     network {
+      mode = "bridge"
+      port "grafana_ui" { }
       port "prometheus_ui" {
         to = 9090
       }
     }
+
     service {
       name  = "prometheus"
       port  = "prometheus_ui"
       tags  = [
         "traefik.enable=true",
-        "traefik.http.routers.prometheus.rule=Host(`prometheus.{{ base_domain }}`)",
+        "traefik.http.routers.prom.rule=Host(`prometheus.{{ base_domain }}`)",
       ]
       check {
         name      = "Healthy"
@@ -23,6 +26,40 @@ job "monitoring" {
         path      = "/-/healthy"
         interval  = "10s"
         timeout   = "2s"
+      }
+    }
+
+    service {
+      name  = "grafana"
+      port  = "grafana_ui"
+      tags  = [
+        "traefik.enable=true",
+        "traefik.http.routers.grafana.rule=Host(`grafana.{{ base_domain }}`)",
+      ]
+      check {
+        name      = "Healthy"
+        type      = "http"
+        port      = "grafana_ui"
+        path      = "/api/health"
+        interval  = "10s"
+        timeout   = "2s"
+      }
+    }
+    task "grafana" {
+      driver = "docker"
+      config {
+        image = "grafana/grafana:8.1.5"
+        ports = ["grafana_ui"]
+      }
+      env {
+        GF_LOG_LEVEL            = "DEBUG"
+        GF_LOG_MODE             = "console"
+        GF_SERVER_HTTP_PORT     = "${NOMAD_PORT_grafana_ui}"
+        GF_PATHS_PROVISIONING   = "/local/provisioning"
+      }
+      resources {
+        cpu    = 100
+        memory = 128
       }
     }
     task "prometheus" {
@@ -119,7 +156,7 @@ scrape_configs:
         insecure_skip_verify: true
     relabel_configs:
     - source_labels: ['__meta_consul_tags']
-      regex: '(.*)http(.*)'
+      regex: '(.*)prometheus(.*)'
       action: keep
     metrics_path: /metrics
     scrape_interval: 5s
@@ -130,7 +167,7 @@ scrape_configs:
       }
       resources {
         cpu    = 100
-        memory = 256
+        memory = 128
       }
     }
   }

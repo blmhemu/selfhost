@@ -60,6 +60,7 @@ nomad_key_src_file: "{{ tls_nomad_dir }}/{{ inventory_hostname }}/{{ nomad_regio
 nomad_consul_ca_src_file: "{{ tls_consul_dir }}/ca/consul-agent-ca.pem"
 nomad_consul_cert_src_file: "{{ tls_consul_dir }}/cli/{{ consul_datacenter }}-cli-consul-0.pem"
 nomad_consul_key_src_file: "{{ tls_consul_dir }}/cli/{{ consul_datacenter }}-cli-consul-0-key.pem"
+# nomad_telemetry_enable: true
 nomad_host_volumes:
   - name: traefik
     path: /mnt/neo/nomad/traefik
@@ -74,7 +75,6 @@ nomad_host_networks:
   - name: localhost
     cidr_or_interface: lo
     reserved_ports: [22]
-nomad_telemetry_enable: true
 
 # NFS
 autofs_maps:
