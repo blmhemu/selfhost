@@ -62,10 +62,11 @@ nomad_consul_cert_src_file: "{{ tls_consul_dir }}/cli/{{ consul_datacenter }}-cl
 nomad_consul_key_src_file: "{{ tls_consul_dir }}/cli/{{ consul_datacenter }}-cli-consul-0-key.pem"
 # nomad_telemetry_enable: true
 nomad_host_volumes:
+  - name: traefik
+    path: /mnt/neo/nomad/traefik
+    read_only: false
   - name: nextcloud_db
     path: /mnt/neo/nomad/nextcloud/db
-    owner: 1000
-    group: 1000
     read_only: false
   - name: nextcloud_data
     path: /mnt/neo/nomad/nextcloud/data
