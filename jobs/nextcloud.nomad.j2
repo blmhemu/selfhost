@@ -2,6 +2,10 @@ job "nextcloud" {
   region        = "{{ nomad_region }}"
   datacenters   = ["{{ nomad_datacenter }}"]
   type          = "service"
+  update {
+    healthy_deadline = "15m"
+    progress_deadline = "20m"
+  }
   group "nextcloud" {
     network {
       mode = "bridge"
@@ -32,8 +36,8 @@ job "nextcloud" {
       check {
         type     = "http"
         path     = "/"
-        interval = "30s"
-        timeout  = "5s"
+        interval = "60s"
+        timeout  = "10s"
       }
     }
     volume "nextcloud_data" {
