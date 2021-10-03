@@ -3,7 +3,7 @@ job "nextcloud" {
   datacenters   = ["{{ nomad_datacenter }}"]
   type          = "service"
   update {
-    healthy_deadline = "15m"
+    healthy_deadline = "15m" # Nextcloud takes some time to initialize
     progress_deadline = "20m"
   }
   group "nextcloud" {
