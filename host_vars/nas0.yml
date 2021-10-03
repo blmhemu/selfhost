@@ -13,10 +13,10 @@ btrfs_subvols:
 nfsserver_exports:
   - share: "{{ btrfs_mount_dir }}/nomad"
     hosts:
-      - name: 192.168.0.0/24 # TODO: Don't hardcode IPs
+      - name: 192.168.0.100 # TODO: Don't hardcode IPs
         options:
           - rw
           - async
-          - root_squash
+          - no_root_squash
           - no_subtree_check
           - insecure # Not really insecure. Read https://security.stackexchange.com/questions/246527/what-is-insecure-about-the-insecure-option-of-nfs-exports
