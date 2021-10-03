@@ -49,11 +49,6 @@ job "traefik" {
     #    timeout   = "2s"
     #  }
     #}
-    volume "traefik" {
-      type      = "host"
-      source    = "traefik"
-      read_only = false
-    }
     task "traefik" {
       driver = "docker"
       config {
@@ -107,16 +102,12 @@ job "traefik" {
           "--accesslog=false",
         ]
         volumes = [
+          "alloc/data/tls:/tls",
           "local/ca.pem:/etc/traefik/ssl/ca.pem",
           "local/cert.pem:/etc/traefik/ssl/cert.pem",
           "local/key.pem:/etc/traefik/ssl/key.pem",
           "local/provider.toml:/etc/traefik/files/provider.toml"
         ]
-      }
-      volume_mount {
-        volume      = "traefik"
-        destination = "/tls"
-        read_only   = false
       }
       env {
         TZ                      = "{{ ntp_timezone }}"
