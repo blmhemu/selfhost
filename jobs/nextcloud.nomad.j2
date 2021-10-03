@@ -75,9 +75,8 @@ job "nextcloud" {
     }
     task "postgres" {
       driver = "docker"
-      user = "1000:1000"
       config {
-        image = "postgres:14"
+        image = "postgres:14-alpine"
       }
       env {
         POSTGRES_DB       = "{{ nc_db }}"
