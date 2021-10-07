@@ -19,11 +19,6 @@ job "traefik" {
       }
       #port "metrics" { }
     }
-    volume "traefik" {
-      type      = "host"
-      source    = "traefik"
-      read_only = false
-    }
     service {
       name  = "{{ nomad_lb_service }}"
       port  = "ts_https"
@@ -54,6 +49,11 @@ job "traefik" {
     #    timeout   = "2s"
     #  }
     #}
+    volume "traefik" {
+      type      = "host"
+      source    = "traefik"
+      read_only = false
+    }
     task "traefik" {
       driver = "docker"
       config {
