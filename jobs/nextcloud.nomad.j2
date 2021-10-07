@@ -12,6 +12,9 @@ job "nextcloud" {
       port "http" {
         to = 80
       }
+      dns {
+        servers = ["9.9.9.9", "1.1.1.1"]
+      }
     }
     service {
       name = "nextcloud"
