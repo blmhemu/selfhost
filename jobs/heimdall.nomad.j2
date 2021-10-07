@@ -1,0 +1,53 @@
+job "heimdall" {
+  region      = "{{ nomad_region }}"
+  datacenters = ["{{ nomad_datacenter }}"]
+  type        = "service"
+  group "heimdall" {
+    count = 1
+    network {
+      port "http" {
+        to = 80
+      }
+    }
+    volume "heimdall" {
+      type      = "host"
+      source    = "heimdall"
+      read_only = false
+    }
+    service {
+      name  = "heimdall"
+      port  = "http"
+      tags  = [
+        "traefik.enable=true",
+        "traefik.http.routers.heimdall.rule=Host(`home.{{ base_domain }}`)",
+      ]
+      check {
+        name      = "Http"
+        type      = "http"
+        port      = "http"
+        path      = "/"
+        interval  = "30s"
+        timeout   = "5s"
+      }
+    }
+    task "heimdall" {
+      driver = "docker"
+      config {
+        image = "lscr.io/linuxserver/heimdall"
+        ports = ["http"]
+      }
+      volume_mount {
+        volume      = "heimdall"
+        destination = "/config"
+        read_only   = false
+      }
+      env {
+        TZ = "{{ ntp_timezone }}"
+      }
+      resources {
+        cpu    = 500
+        memory = 256
+      }
+    }
+  }
+}
