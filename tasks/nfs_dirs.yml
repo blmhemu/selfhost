@@ -1,11 +1,7 @@
 ---
 
-- name: Ensure required host vols exist
-  become: true
-  file:
-    path: "{{ item.path }}"
-    owner: "{{ item.owner | default('nobody') }}"
-    group: "{{ item.group | default('nogroup') }}"
-    mode: "{{ item.mode | default('0777') }}"
-    state: directory
+- name: Ensure required dirs exists
+  include: check_and_create.yml
   with_items: "{{ nomad_host_volumes }}"
+  loop_control:
+    label: "{{ item.name }}"

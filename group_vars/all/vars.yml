@@ -71,6 +71,9 @@ nomad_host_volumes:
   - name: nextcloud_data
     path: /mnt/neo/nomad/nextcloud/data
     read_only: false
+  - name: heimdall
+    path: /mnt/neo/nomad/heimdall
+    read_only: false
 nomad_host_networks:
   - name: default
     cidr_or_interface: "{{ ansible_default_ipv4.interface }}"
