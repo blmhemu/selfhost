@@ -67,6 +67,7 @@ nomad_host_volumes:
     read_only: false
   - name: nextcloud_db
     path: /mnt/neo/nomad/nextcloud/db
+    attr: +C # No COW is better for DBs
     read_only: false
   - name: nextcloud_data
     path: /mnt/neo/nomad/nextcloud/data

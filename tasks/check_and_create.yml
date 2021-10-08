@@ -13,5 +13,6 @@
     owner: "{{ item.owner | default('nobody') }}"
     group: "{{ item.group | default('nogroup') }}"
     mode: "{{ item.mode | default('0777') }}"
+    attr: "{{ item.attr | default('') }}"
     state: directory
   when: not item_stat.stat.exists
