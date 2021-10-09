@@ -39,8 +39,8 @@ dnsmasq_config: |
   # For consul
   server=/consul/127.0.0.1#8600
   # For remaining
+  server=9.9.9.9
   server=1.1.1.1
-  server=8.8.8.8
   interface=lo
   interface=docker0
   bind-dynamic
@@ -51,7 +51,7 @@ resolv_config: |
   options trust-ad
 
 # Nomad
-nomad_version: 1.1.5
+nomad_version: 1.1.6
 nomad_region: global
 nomad_datacenter: dc1
 nomad_ca_src_file: "{{ tls_nomad_dir }}/ca/nomad-agent-ca.pem"
