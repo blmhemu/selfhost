@@ -1,7 +1,7 @@
 ---
 
 - name: Ensure required dirs exists
-  include: check_and_create.yml
+  include: safe_create.yml
   with_items: "{{ nomad_host_volumes }}"
   loop_control:
     label: "{{ item.name }}"
