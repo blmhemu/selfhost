@@ -9,6 +9,8 @@
     - blmhemu.general.bootstrap
     - role-tailscale
     - role-docker
+  tasks:
+    - include_tasks: tasks/network-online.yml
 
 # NFS server and client
 - name: Ready NFS Server
