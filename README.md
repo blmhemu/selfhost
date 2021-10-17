@@ -63,6 +63,9 @@ ansible-playbook --ask-vault-pass playbook.yml
 
 The test playbook is WIP (Work In Progress) and can be unstable.
 
-## Post Run
+## Maintenance
 
-Configure Tailscale DNS with the IP addresses of the consul agents (both server and client) and a global DNS. Now the services must be accessible at `rpi0.node.consul` and `nas0.node.consul`
+To rekey or rotate ansible vault passwords:
+```shell
+ansible-vault rekey **/*.vault.yml
+```

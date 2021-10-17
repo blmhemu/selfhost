@@ -1,8 +1,7 @@
-roles/ansible_consul
-roles/ansible_nomad
-roles/ansible_docker
-roles/ansible_tailscale
-roles/ansible_disable_ipv6
-tls
-nomad_jobs_old
+ansible_collections
+roles
+files/tls
 .vscode
+.idea
+.DS_Store
+# TODO: Write git hooks for encrypted files

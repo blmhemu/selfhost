@@ -1,0 +1,18 @@
+---
+
+roles:
+  - name: role-ntp
+    src: https://github.com/geerlingguy/ansible-role-ntp
+    version: master
+  - name: role-tailscale
+    src: https://github.com/artis3n/ansible-role-tailscale.git
+    version: main
+  - name: role-docker
+    src: https://github.com/darkwizard242/ansible-role-docker
+    version: master
+
+collections:
+  - name: https://github.com/blmhemu/blmhemu.general
+    type: git
+    version: main
+  - name: robertdebock.roles

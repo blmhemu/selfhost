@@ -1,0 +1,5 @@
+---
+
+consul_encrypt_key: <consul_encrypt_key_here(see consul keygen)>
+
+tailscale_auth_key: <tailscale_auth_key_here(see tailscale website)>

@@ -1,0 +1,24 @@
+---
+
+- name: Collect service facts
+  service_facts:
+
+- name: Enable NetworkManager-wait-online.service
+  become: true
+  service:
+    name: NetworkManager-wait-online
+    enabled: true
+    state: started
+  when:
+    - ansible_facts.services["NetworkManager.service"] is defined
+    - ansible_facts.services["NetworkManager.service"].status == "enabled"
+
+- name: Enable systemd-networkd-wait-online.service
+  become: true
+  service:
+    name: systemd-networkd-wait-online
+    enabled: true
+    state: started
+  when:
+    - ansible_facts.services["systemd-networkd.service"] is defined
+    - ansible_facts.services["systemd-networkd.service"].status == "enabled"

@@ -1,21 +1,10 @@
+rpi0 ansible_host=192.168.0.100
+nas0 ansible_host=192.168.0.101
+
 [rpi]
 rpi0
 
 [nas]
-nas0
-
-[consul_instances:children]
-consul_servers
-consul_clients
-
-[nomad_instances:children]
-nomad_servers
-nomad_clients
-
-[nomad_servers]
-rpi0
-
-[nomad_clients]
 nas0
 
 [consul_servers]
@@ -23,3 +12,40 @@ rpi0
 
 [consul_clients]
 nas0
+
+[nomad_both]
+rpi0
+
+[nomad_servers]
+
+[nomad_clients]
+nas0
+
+[nomad_servers:children]
+nomad_both
+
+[nomad_clients:children]
+nomad_both
+
+[nomad_instances:children]
+nomad_servers
+nomad_clients
+
+[consul_instances:children]
+consul_servers
+consul_clients
+
+[consul_servers:vars]
+consul_role=server
+
+[consul_clients:vars]
+consul_role=client
+
+[nomad_servers:vars]
+nomad_role=server
+
+[nomad_clients:vars]
+nomad_role=client
+
+[nomad_both:vars]
+nomad_role=both

@@ -1,0 +1,50 @@
+---
+
+- block:
+    - name: Ensure consul tls dirs exists
+      file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ tls_consul_dir }}/ca"
+        - "{{ tls_consul_dir }}/cli"
+
+    - name: Create consul CA
+      command: consul tls ca create
+      args:
+        chdir: "{{ tls_consul_dir }}/ca"
+        creates: "consul-agent-ca-key.pem"
+
+    - name: Create consul cli
+      command: >
+        consul tls cert create
+        -cli
+        -dc={{ consul_datacenter }}
+        -ca=../ca/consul-agent-ca.pem
+        -key=../ca/consul-agent-ca-key.pem
+      args:
+        chdir: "{{ tls_consul_dir }}/cli"
+        creates: "{{ consul_datacenter }}-cli-consul-0-key.pem"
+  run_once: true
+  delegate_to: 127.0.0.1
+
+- block:
+    - name: Ensure consul agent tls dirs exists
+      file:
+        path: "{{ tls_consul_dir }}/{{ inventory_hostname }}"
+        state: directory
+
+    - name: Create consul agent certs
+      command: >
+        consul tls cert create
+        -{{ consul_role }}
+        -dc={{ consul_datacenter }}
+        -additional-ipaddress={{ ansible_default_ipv4.address }}
+        -additional-ipaddress={{ ansible_tailscale0.ipv4.address }}
+        -additional-ipaddress={{ ansible_docker0.ipv4.address }}
+        -ca=../ca/consul-agent-ca.pem
+        -key=../ca/consul-agent-ca-key.pem
+      args:
+        chdir: "{{ tls_consul_dir }}/{{ inventory_hostname }}"
+        creates: "{{ consul_datacenter }}-{{ consul_role }}-consul-0-key.pem"
+  delegate_to: 127.0.0.1

@@ -1,0 +1,13 @@
+---
+
+# General
+acme_email: <email_for_ssl>
+base_domain: <base_domain_name>
+nomad_lb_service: <name_of_lb_service>
+
+# Job specific (e.x: Nextcloud)
+nc_db: <nc_db_name>
+nc_db_user: <nc_db_user>
+nc_db_pass: <nc_db_pass>
+nc_admin_user: <nc_db_admin_user>
+nc_admin_pass: <nc_db_admin_pass>

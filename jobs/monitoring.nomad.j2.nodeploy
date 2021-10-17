@@ -1,0 +1,174 @@
+job "monitoring" {
+  region      = "{{ nomad_region }}"
+  datacenters = ["{{ nomad_datacenter }}"]
+  type        = "service"
+  group "monitoring" {
+    count = 1
+    network {
+      mode = "bridge"
+      port "grafana_ui" { }
+      port "prometheus_ui" {
+        to = 9090
+      }
+    }
+
+    service {
+      name  = "prometheus"
+      port  = "prometheus_ui"
+      tags  = [
+        "traefik.enable=true",
+        "traefik.http.routers.prom.rule=Host(`prometheus.{{ base_domain }}`)",
+      ]
+      check {
+        name      = "Healthy"
+        type      = "http"
+        port      = "prometheus_ui"
+        path      = "/-/healthy"
+        interval  = "10s"
+        timeout   = "2s"
+      }
+    }
+
+    service {
+      name  = "grafana"
+      port  = "grafana_ui"
+      tags  = [
+        "traefik.enable=true",
+        "traefik.http.routers.grafana.rule=Host(`grafana.{{ base_domain }}`)",
+      ]
+      check {
+        name      = "Healthy"
+        type      = "http"
+        port      = "grafana_ui"
+        path      = "/api/health"
+        interval  = "10s"
+        timeout   = "2s"
+      }
+    }
+    task "grafana" {
+      driver = "docker"
+      config {
+        image = "grafana/grafana:8.1.5"
+        ports = ["grafana_ui"]
+      }
+      env {
+        GF_LOG_LEVEL            = "DEBUG"
+        GF_LOG_MODE             = "console"
+        GF_SERVER_HTTP_PORT     = "${NOMAD_PORT_grafana_ui}"
+        GF_PATHS_PROVISIONING   = "/local/provisioning"
+      }
+      resources {
+        cpu    = 100
+        memory = 128
+      }
+    }
+    task "prometheus" {
+      driver = "docker"
+      config {
+        image = "prom/prometheus:v2.30.2"
+        ports = ["prometheus_ui"]
+        volumes = [
+          "local/consul_ca.pem:/etc/prometheus/ssl/consul_ca.pem",
+          "local/consul_cert.pem:/etc/prometheus/ssl/consul_cert.pem",
+          "local/consul_key.pem:/etc/prometheus/ssl/consul_key.pem",
+          "local/nomad_ca.pem:/etc/prometheus/ssl/nomad_ca.pem",
+          "local/nomad_cert.pem:/etc/prometheus/ssl/nomad_cert.pem",
+          "local/nomad_key.pem:/etc/prometheus/ssl/nomad_key.pem",
+          "local/prometheus.yml:/etc/prometheus/prometheus.yml"
+        ]
+      }
+      template {
+        data = <<EOF
+{{ lookup('file', 'files/tls/consul/ca/consul-agent-ca.pem') }}
+        EOF
+        destination = "local/consul_ca.pem"
+      }
+      template {
+        data = <<EOF
+{{ lookup('file', 'files/tls/consul/cli/dc1-cli-consul-0.pem') }}
+        EOF
+        destination = "local/consul_cert.pem"
+      }
+      template {
+        data = <<EOF
+{{ lookup('file', 'files/tls/consul/cli/dc1-cli-consul-0-key.pem') }}
+        EOF
+        destination = "local/consul_key.pem"
+      }
+      template {
+        data = <<EOF
+{{ lookup('file', 'files/tls/nomad/ca/nomad-agent-ca.pem') }}
+        EOF
+        destination = "local/nomad_ca.pem"
+      }
+      template {
+        data = <<EOF
+{{ lookup('file', 'files/tls/nomad/cli/global-cli-nomad-0.pem') }}
+        EOF
+        destination = "local/nomad_cert.pem"
+      }
+      template {
+        data = <<EOF
+{{ lookup('file', 'files/tls/nomad/cli/global-cli-nomad-0-key.pem') }}
+        EOF
+        destination = "local/nomad_key.pem"
+      }
+      template {
+        data = <<EOF
+---
+global:
+  scrape_interval:     5s
+  evaluation_interval: 5s
+scrape_configs:
+  - job_name: 'nomad_metrics'
+    consul_sd_configs:
+    - server: '{{ "{{" }} env "NOMAD_IP_prometheus_ui" {{ "}}" }}:8501'
+      services: ['nomad-client', 'nomad']
+      scheme: 'https'
+      tls_config:
+        ca_file: '/etc/prometheus/ssl/consul_ca.pem'
+        cert_file: '/etc/prometheus/ssl/consul_cert.pem'
+        key_file: '/etc/prometheus/ssl/consul_key.pem'
+        insecure_skip_verify: true
+    relabel_configs:
+    - source_labels: ['__meta_consul_tags']
+      regex: '(.*)http(.*)'
+      action: keep
+    tls_config:
+      ca_file: '/etc/prometheus/ssl/nomad_ca.pem'
+      cert_file: '/etc/prometheus/ssl/nomad_cert.pem'
+      key_file: '/etc/prometheus/ssl/nomad_key.pem'
+      insecure_skip_verify: true
+    scheme: 'https'
+    metrics_path: /v1/metrics
+    scrape_interval: 5s
+    params:
+      format: ['prometheus']
+  - job_name: 'traefik_metrics'
+    consul_sd_configs:
+    - server: '{{ "{{" }} env "NOMAD_IP_prometheus_ui" {{ "}}" }}:8501'
+      services: ['traefik-metrics']
+      scheme: 'https'
+      tls_config:
+        ca_file: '/etc/prometheus/ssl/consul_ca.pem'
+        cert_file: '/etc/prometheus/ssl/consul_cert.pem'
+        key_file: '/etc/prometheus/ssl/consul_key.pem'
+        insecure_skip_verify: true
+    relabel_configs:
+    - source_labels: ['__meta_consul_tags']
+      regex: '(.*)prometheus(.*)'
+      action: keep
+    metrics_path: /metrics
+    scrape_interval: 5s
+    params:
+      format: ['prometheus']
+        EOF
+        destination = "local/prometheus.yml"
+      }
+      resources {
+        cpu    = 100
+        memory = 128
+      }
+    }
+  }
+}
