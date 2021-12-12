@@ -69,3 +69,6 @@ To rekey or rotate ansible vault passwords:
 ```shell
 ansible-vault rekey **/*.vault.yml
 ```
+
+Nextcloud upgrades must be done in steps. For example, you cannot upgrade from 22.1 to 23.
+You should instead do 22.1 -> 22.2 -> 23
