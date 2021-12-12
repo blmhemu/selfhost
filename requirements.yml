@@ -2,7 +2,7 @@
 
 roles:
   - name: role-ntp
-    src: https://github.com/geerlingguy/ansible-role-ntp
+    src: https://github.com/blmhemu/ansible-role-ntp
     version: master
   - name: role-tailscale
     src: https://github.com/artis3n/ansible-role-tailscale.git

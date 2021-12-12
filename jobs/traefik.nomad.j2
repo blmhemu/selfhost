@@ -57,7 +57,7 @@ job "traefik" {
     task "traefik" {
       driver = "docker"
       config {
-        image = "traefik:v2.5"
+        image = "traefik:2.5"
         ports = ["ts_http", "ts_https", "ping"] # Can add 'metrics' as well.
         args  = [
           # Permanent http -> https redirect
