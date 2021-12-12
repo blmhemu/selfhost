@@ -25,7 +25,7 @@ tls_consul_dir: "{{ tls_base_dir }}/consul"
 tls_nomad_dir: "{{ tls_base_dir }}/nomad"
 
 # Consul
-consul_version: 1.10.3
+consul_version: 1.10.4
 consul_datacenter: dc1
 # consul_encrypt_key in vars.vault.yml
 consul_ca_src_file: "{{ tls_consul_dir }}/ca/consul-agent-ca.pem"
