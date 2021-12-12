@@ -56,7 +56,7 @@ job "nextcloud" {
     task "nextcloud" {
       driver = "docker"
       config {
-        image = "nextcloud:22"
+        image = "nextcloud:23"
         ports = ["http"]
       }
       env {
