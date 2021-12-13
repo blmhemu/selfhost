@@ -18,6 +18,7 @@ job "nextcloud" {
     }
     service {
       name = "nextcloud"
+      port = "http"
       tags = [
         "traefik.enable=true",
         "traefik.http.routers.nextcloud.rule=Host(`nextcloud.{{ base_domain }}`)",
@@ -35,7 +36,6 @@ job "nextcloud" {
         "traefik.http.middlewares.nextcloud.headers.stsPreload=true",
         "traefik.http.routers.nextcloud.middlewares=nextcloud_redirect,nextcloud",
       ]
-      port = "http"
       check {
         type     = "http"
         path     = "/"

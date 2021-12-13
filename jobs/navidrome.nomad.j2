@@ -1,0 +1,58 @@
+job "navidrome" {
+  region      = "{{ nomad_region }}"
+  datacenters = ["{{ nomad_datacenter }}"]
+  type        = "service"
+  group "navidrome" {
+    count = 1
+    network {
+      port "http" {
+        to = 4533
+      }
+    }
+    service {
+      name  = "navidrome"
+      tags  = [
+        "traefik.enable=true",
+        "traefik.http.routers.navidrome.rule=Host(`music.{{ base_domain }}`)",
+      ]
+      port = "http"
+      check {
+        type     = "http"
+        path     = "/"
+        interval = "60s"
+        timeout  = "10s"
+      }
+    }
+    volume "navidrome_music" {
+      type      = "host"
+      source    = "navidrome_music"
+      read_only = true
+    }
+    volume "navidrome_data" {
+      type      = "host"
+      source    = "navidrome_data"
+      read_only = false
+    }
+    task "navidrome" {
+      driver = "docker"
+      config {
+        image   = "deluan/navidrome:0.47.0"
+        ports = ["http"]
+      }
+      volume_mount {
+        volume      = "navidrome_music"
+        destination = "/music"
+        read_only   = true
+      }
+      volume_mount {
+        volume      = "navidrome_data"
+        destination = "/data"
+        read_only   = false
+      }
+      resources {
+        cpu    = 250
+        memory = 256
+      }
+    }
+  }
+}

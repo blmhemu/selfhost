@@ -1,0 +1,108 @@
+job "koel" {
+  region        = "{{ nomad_region }}"
+  datacenters   = ["{{ nomad_datacenter }}"]
+  type          = "service"
+  #update {
+  #  healthy_deadline = "15m" # koel takes some time to initialize
+  #  progress_deadline = "20m"
+  #}
+  group "koel" {
+    network {
+      mode = "bridge"
+      port "http" {
+        to = 80
+      }
+      dns {
+        servers = ["9.9.9.9", "1.1.1.1"]
+      }
+    }
+    service {
+      name = "koel"
+      tags = [
+        "traefik.enable=true",
+        "traefik.http.routers.koel.rule=Host(`koel.{{ base_domain }}`)",
+      ]
+      port = "http"
+      check {
+        type     = "http"
+        path     = "/"
+        interval = "60s"
+        timeout  = "10s"
+      }
+    }
+    volume "koel_music" {
+      type      = "host"
+      source    = "koel_music"
+      read_only = false
+    }
+    volume "koel_covers" {
+      type      = "host"
+      source    = "koel_covers"
+      read_only = false
+    }
+    volume "koel_search" {
+      type      = "host"
+      source    = "koel_search"
+      read_only = false
+    }
+    volume "koel_db" {
+      type      = "host"
+      source    = "koel_db"
+      read_only = false
+    }
+    task "koel" {
+      driver = "docker"
+      config {
+        image = "blmhemu/koel:5.1.10"
+        ports = ["http"]
+      }
+      env {
+        FORCE_HTTPS   = "true"
+        DB_CONNECTION = "pgsql"
+        DB_HOST       = "localhost"
+        DB_DATABASE   = "{{ koel_db }}"
+        DB_USERNAME   = "{{ koel_db_user }}"
+        DB_PASSWORD   = "{{ koel_db_pass }}"
+      }
+      volume_mount {
+        volume      = "koel_music"
+        destination = "/music"
+        read_only   = false
+      }
+      volume_mount {
+        volume      = "koel_covers"
+        destination = "/var/www/html/public/img/covers"
+        read_only   = false
+      }
+      volume_mount {
+        volume      = "koel_search"
+        destination = "/var/www/html/storage/search-indexes"
+        read_only   = false
+      }
+      resources {
+        cpu    = 250
+        memory = 256
+      }
+    }
+    task "postgres" {
+      driver = "docker"
+      config {
+        image = "postgres:14-alpine"
+      }
+      env {
+        POSTGRES_DB       = "{{ koel_db }}"
+        POSTGRES_USER     = "{{ koel_db_user }}"
+        POSTGRES_PASSWORD = "{{ koel_db_pass }}"
+      }
+      volume_mount {
+        volume      = "koel_db"
+        destination = "/var/lib/postgresql/data"
+        read_only   = false
+      }
+      resources {
+        cpu    = 200
+        memory = 256
+      }
+    }
+  }
+}

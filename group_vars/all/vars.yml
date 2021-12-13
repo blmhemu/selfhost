@@ -14,7 +14,7 @@ docker_nonroot_users:
   - ubuntu
 
 # Tailscale
-# See vault/common.yml for tailscale_auth_key
+# See vars.vault.yml
 
 # CNI
 cni_version: 1.0.1
@@ -61,9 +61,11 @@ nomad_consul_cert_src_file: "{{ tls_consul_dir }}/cli/{{ consul_datacenter }}-cl
 nomad_consul_key_src_file: "{{ tls_consul_dir }}/cli/{{ consul_datacenter }}-cli-consul-0-key.pem"
 # nomad_telemetry_enable: true
 nomad_host_volumes:
+  # Traefik
   - name: traefik
     path: /mnt/neo/nomad/traefik
     read_only: false
+  # Nextcloud
   - name: nextcloud_db
     path: /mnt/neo/nomad/nextcloud/db
     attr: +C # No COW is better for DBs
@@ -71,6 +73,28 @@ nomad_host_volumes:
   - name: nextcloud_data
     path: /mnt/neo/nomad/nextcloud/data
     read_only: false
+  # Koel
+  - name: koel_db
+    path: /mnt/neo/nomad/koel/db
+    attr: +C # No COW is better for DBs
+    read_only: false
+  - name: koel_music
+    path: /mnt/neo/nomad/koel/music
+    read_only: false
+  - name: koel_covers
+    path: /mnt/neo/nomad/koel/covers
+    read_only: false
+  - name: koel_search
+    path: /mnt/neo/nomad/koel/search
+    read_only: false
+  # Navidrome
+  - name: navidrome_music
+    path: /mnt/neo/nomad/navidrome/music
+    read_only: false
+  - name: navidrome_data
+    path: /mnt/neo/nomad/navidrome/data
+    read_only: false
+  # Heimdall
   - name: heimdall
     path: /mnt/neo/nomad/heimdall
     read_only: false
