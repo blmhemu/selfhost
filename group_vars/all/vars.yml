@@ -94,6 +94,9 @@ nomad_host_volumes:
   - name: navidrome_data
     path: /mnt/neo/nomad/navidrome/data
     read_only: false
+  - name: musicbrowser_config
+    path: /mnt/neo/nomad/navidrome/mbconfig
+    read_only: false
   # Heimdall
   - name: heimdall
     path: /mnt/neo/nomad/heimdall

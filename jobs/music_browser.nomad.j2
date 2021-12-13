@@ -1,0 +1,58 @@
+job "musicbrowser" {
+  region      = "{{ nomad_region }}"
+  datacenters = ["{{ nomad_datacenter }}"]
+  type        = "service"
+  group "musicbrowser" {
+    count = 1
+    network {
+      port "http" {
+        to = 8080
+      }
+    }
+    service {
+      name  = "musicbrowser"
+      port = "http"
+      tags  = [
+        "traefik.enable=true",
+        "traefik.http.routers.musicbrowser.rule=Host(`browsemusic.{{ base_domain }}`)",
+      ]
+      check {
+        type     = "http"
+        path     = "/"
+        interval = "60s"
+        timeout  = "10s"
+      }
+    }
+    volume "navidrome_music" {
+      type      = "host"
+      source    = "navidrome_music"
+      read_only = false
+    }
+    volume "musicbrowser_config" {
+      type      = "host"
+      source    = "musicbrowser_config"
+      read_only = false
+    }
+    task "musicbrowser" {
+      driver = "docker"
+      config {
+        image   = "hurlenko/filebrowser:v2.19.0"
+        ports = ["http"]
+      }
+      volume_mount {
+        volume      = "navidrome_music"
+        destination = "/data"
+        read_only   = false
+      }
+      volume_mount {
+        volume      = "musicbrowser_config"
+        destination = "/config"
+        read_only   = false
+      }
+      resources {
+        cpu    = 250
+        memory = 256
+      }
+    }
+  }
+}
