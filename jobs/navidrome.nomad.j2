@@ -19,8 +19,8 @@ job "navidrome" {
       check {
         type     = "http"
         path     = "/"
-        interval = "60s"
-        timeout  = "10s"
+        interval = "120s"
+        timeout  = "30s"
       }
     }
     volume "navidrome_music" {
