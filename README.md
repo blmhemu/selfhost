@@ -55,7 +55,7 @@ ansible-vault edit group_vars/all/vars.vault.yml
 ansible-playbook --ask-vault-pass playbook.yml
 ```
 
-To import the security keys to macos keychain, do
+To import the security keys to local machine (macos only) keychain, do
 ```
 ./scripts/import_keys.sh
 ```
