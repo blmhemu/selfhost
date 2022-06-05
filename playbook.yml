@@ -28,6 +28,12 @@
     - role: robertdebock.roles.autofs
       become: true
 
+- name: Display all variables/facts known for a host
+  hosts: consul_instances
+  tasks:
+    - ansible.builtin.debug:
+        var: hostvars[inventory_hostname]
+
 - name: Ready consul cluster
   hosts: consul_instances
   pre_tasks:
