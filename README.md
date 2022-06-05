@@ -48,15 +48,9 @@ And follow the steps at https://wiki.kobol.io/helios64/install/transfer/
 ```shell
 # Install the required roles
 ansible-galaxy install -r requirements.yml
-# Get an ephemeral (prefered) or reusable tailscale auth key at https://login.tailscale.com/admin/settings/authkeys
-# Encrypt the key using ansible vault
-# Remember to remove the line from shell history (.zsh_history | .bash_history)
-ansible-vault encrypt_string --ask-vault-pass 'tskey-xxxxxxxxxxxxxxxx' --name 'tailscale_auth_key'
-# Replace vars section of `Install Tailscale` part of playbook.yml with the output of above command
-# tailscale_auth_key: !vault |
-#   $ANSIBLE_VAULT;1.1;AES256
-#   xxxxxxxxxxxxxxxxxxxxxxxxxxx
-#   xxxxxxxxxxxxxxxxxxxxxxxxxxx
+# Get an ephemeral or reusable tailscale auth key at https://login.tailscale.com/admin/settings/authkeys
+# Put the key in group_vars/all/vars.vault.yml
+ansible-vault edit group_vars/all/vars.vault.yml
 # Run the playbook with below command. Enter vault password when prompted.
 ansible-playbook --ask-vault-pass playbook.yml
 ```
