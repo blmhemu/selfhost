@@ -61,6 +61,11 @@ ansible-vault encrypt_string --ask-vault-pass 'tskey-xxxxxxxxxxxxxxxx' --name 't
 ansible-playbook --ask-vault-pass playbook.yml
 ```
 
+To import the security keys to macos keychain, do
+```
+./scripts/import_keys.sh
+```
+
 The test playbook is WIP (Work In Progress) and can be unstable.
 
 ## Maintenance
