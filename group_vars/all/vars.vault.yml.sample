@@ -1,5 +1,7 @@
 ---
 
-consul_encrypt_key: <consul_encrypt_key_here(see consul keygen)>
+tailscale_authkey: # tailscale_authkey_here https://tailscale.com/kb/1085/auth-keys/
 
-tailscale_auth_key: <tailscale_auth_key_here(see tailscale website)>
+consul_encrypt_key: # consul_encrypt_key_here https://www.consul.io/commands/keygen
+
+# Encrypt using ansible-vault
