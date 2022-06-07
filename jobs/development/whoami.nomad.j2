@@ -1,0 +1,44 @@
+job "whoami" {
+  region        = "{{ nomad_region }}"
+  datacenters   = ["{{ nomad_datacenter }}"]
+  type          = "service"
+  update {
+    healthy_deadline = "15m" # whoami takes some time to initialize
+    progress_deadline = "20m"
+  }
+  group "whoami" {
+    count = 3
+    network {
+      port "http" {
+        to = 80
+      }
+    }
+    service {
+      name = "whoami"
+      port = "http"
+      tags  = [
+        "caddy",
+        "public",
+        "caddy_enable=true",
+        "caddy_vhost=lol.lol.com",
+      ]
+      check {
+        type     = "http"
+        path     = "/"
+        interval = "60s"
+        timeout  = "10s"
+      }
+    }
+    task "whoami" {
+      driver = "docker"
+      config {
+        image = "containous/whoami"
+        ports = ["http"]
+      }
+      resources {
+        cpu    = 10
+        memory = 10
+      }
+    }
+  }
+}

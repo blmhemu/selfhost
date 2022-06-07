@@ -17,5 +17,7 @@
       with_fileglob:
         - jobs/*.nomad
         - jobs/*.nomad.j2
-      delegate_to: 127.0.0.1
+        # - jobs/development/*.nomad
+        # - jobs/development/*.nomad.j2
+      delegate_to: localhost
       run_once: true

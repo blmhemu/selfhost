@@ -1,0 +1,55 @@
+{{- range services -}}
+    {{- range service .Name -}}
+        {{- if (.Tags | contains "caddy") -}}
+            {{- scratch.MapSetX "vhosts" .Name true -}}
+            {{- if .Tags | contains "public" }}
+                {{- scratch.MapSet "vhosts" .Name false -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+{
+    http_port 80
+    https_port 443
+}
+
+http://*.example.com {
+{{ range $vhost, $private := scratch.Get "vhosts" }}
+    @{{ $vhost }} host {{ $vhost }}.example.com
+    handle @{{ $vhost }} {
+{{- if $private }}
+        @blocked not remote_ip 192.168.1.0/24
+        respond @blocked "Access denied" 403
+{{- end }}
+
+{{- range services }}
+        {{- range service .Name }}
+            {{- if (and (.Tags | contains "caddy") (eq .Name $vhost)) }}
+                {{- if index .ServiceMeta "path" }}
+        reverse_proxy {{ index .ServiceMeta "path" }} http://{{ .Address }}:{{ .Port }}
+                {{- else }}
+        reverse_proxy http://{{ .Address }}:{{ .Port }}
+                {{- end }}
+            {{- end }}
+        {{- end }}
+    {{- end }}
+    }
+{{ end }}
+    handle {
+        abort
+    }
+}
+
+# Health check endpoint
+http://0.0.0.0:8081 {
+  respond 200 /health
+}
+
+# Log all other traffic for debugging
+:8443 {
+  respond 404
+
+  log {
+    output stdout
+  }
+}

@@ -1,0 +1,4 @@
+---
+
+# Added to support pyenv
+ansible_python_interpreter: $(which python)

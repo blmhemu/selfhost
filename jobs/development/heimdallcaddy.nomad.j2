@@ -1,0 +1,59 @@
+job "heimdall" {
+  region      = "{{ nomad_region }}"
+  datacenters = ["{{ nomad_datacenter }}"]
+  type        = "service"
+  update {
+    healthy_deadline = "15m" # Heimdall takes some time to initialize
+    progress_deadline = "20m"
+  }
+  group "heimdall" {
+    count = 3
+    network {
+      port "http" {
+        to = 80
+      }
+    }
+    volume "heimdall" {
+      type      = "host"
+      source    = "heimdall"
+      read_only = false
+    }
+    service {
+      name  = "heimdall"
+      port  = "http"
+      tags  = [
+        "caddy",
+        "public",
+        "caddy_enable=true",
+        "caddy_vhost=lol.lol.com",
+      ]
+      check {
+        name      = "Http"
+        type      = "http"
+        port      = "http"
+        path      = "/"
+        interval  = "30s"
+        timeout   = "5s"
+      }
+    }
+    task "heimdall" {
+      driver = "docker"
+      config {
+        image = "lscr.io/linuxserver/heimdall"
+        ports = ["http"]
+      }
+      volume_mount {
+        volume      = "heimdall"
+        destination = "/config"
+        read_only   = false
+      }
+      env {
+        TZ = "{{ ntp_timezone }}"
+      }
+      resources {
+        cpu    = 200
+        memory = 256
+      }
+    }
+  }
+}

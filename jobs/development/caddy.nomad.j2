@@ -1,0 +1,89 @@
+job "traefik" {
+  region      = "{{ nomad_region }}"
+  datacenters = ["{{ nomad_datacenter }}"]
+  type        = "service"
+  group "traefik" {
+    count = 1
+    network {
+      port "ts_http" {
+        static        = 80
+        host_network  = "tailscale"
+      }
+      port "ts_https" {
+        static        = 443
+        host_network  = "tailscale"
+      }
+      # Health check. No need to expose outside
+      port "health" {
+        to = 8081
+        host_network  = "localhost"
+      }
+    }
+    service {
+      name  = "{{ nomad_lb_service }}"
+      port  = "ts_https"
+      check {
+        name      = "Health"
+        type      = "http"
+        port      = "health"
+        path      = "/"
+        interval  = "10s"
+        timeout   = "2s"
+      }
+    }
+    task "traefik" {
+      driver = "docker"
+      config {
+        image = "blmhemu/caddy:2.5.1-alpine"
+        ports = ["ts_http", "ts_https", "health"]
+        mounts = [
+          {
+              type = "bind"
+              source = "local/config"
+              target = "/etc/caddy"
+          }
+        ]
+        volumes = [
+          "local/ca.pem:/etc/traefik/ssl/ca.pem",
+          "local/cert.pem:/etc/traefik/ssl/cert.pem",
+          "local/key.pem:/etc/traefik/ssl/key.pem",
+        ]
+      }
+      env {
+        TZ                      = "{{ ntp_timezone }}"
+        PORKBUN_API_KEY         = "{{ porkbun_apikey }}"
+        PORKBUN_SECRET_API_KEY  = "{{ porkbun_secret_apikey }}"
+      }
+      template {
+        data = <<EOF
+{{ lookup('file', 'files/tls/consul/ca/consul-agent-ca.pem') }}
+        EOF
+        destination = "local/ca.pem"
+      }
+      template {
+        data = <<EOF
+{{ lookup('file', 'files/tls/consul/cli/dc1-cli-consul-0.pem') }}
+        EOF
+        destination = "local/cert.pem"
+      }
+      template {
+        data = <<EOF
+{{ lookup('file', 'files/tls/consul/cli/dc1-cli-consul-0-key.pem') }}
+        EOF
+        destination = "local/key.pem"
+      }
+      template {
+        data = <<EOF
+{{ lookup('file', 'jobs/development/Caddyfile.tmpl') }}
+        EOF
+        destination = "local/config/Caddyfile"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+      }
+      resources {
+        cpu    = 500
+        memory = 256
+      }
+    }
+  }
+}
