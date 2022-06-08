@@ -28,12 +28,6 @@
     - role: robertdebock.roles.autofs
       become: true
 
-- name: Display all variables/facts known for a host
-  hosts: consul_instances
-  tasks:
-    - ansible.builtin.debug:
-        var: hostvars[inventory_hostname]
-
 - name: Ready consul cluster
   hosts: consul_instances
   pre_tasks:
@@ -41,6 +35,14 @@
   roles:
     - blmhemu.general.consul
     - blmhemu.general.dnsmasq
+
+# WIP
+# - name: Ready vault cluster
+#   hosts: vault_servers
+#   pre_tasks:
+#     - include_tasks: tasks/tls_vault.yml
+#   roles:
+#     - blmhemu.general.vault
 
 - name: Ready nomad cluster
   hosts: nomad_instances

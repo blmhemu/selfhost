@@ -1,0 +1,50 @@
+---
+
+- block:
+    - name: Ensure vault tls dirs exists
+      file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ tls_vault_dir }}/ca"
+        - "{{ tls_vault_dir }}/cli"
+
+    - name: Create vault CA
+      command: consul tls ca create -domain=vault
+      args:
+        chdir: "{{ tls_vault_dir }}/ca"
+        creates: "vault-agent-ca-key.pem"
+
+    - name: Create vault cli
+      command: >
+        consul tls cert create -domain=vault
+        -cli
+        -dc={{ vault_region }}
+        -ca=../ca/vault-agent-ca.pem
+        -key=../ca/vault-agent-ca-key.pem
+      args:
+        chdir: "{{ tls_vault_dir }}/cli"
+        creates: "{{ vault_region }}-cli-vault-0-key.pem"
+  run_once: true
+  delegate_to: 127.0.0.1
+
+- block:
+    - name: Ensure vault agent tls dirs exists
+      file:
+        path: "{{ tls_vault_dir }}/{{ inventory_hostname }}"
+        state: directory
+
+    - name: Create vault agent certs
+      command: >
+        consul tls cert create -domain=vault
+        -server
+        -dc={{ vault_region }}
+        -additional-ipaddress={{ ansible_default_ipv4.address }}
+        -additional-ipaddress={{ ansible_tailscale0.ipv4.address }}
+        -additional-ipaddress={{ ansible_docker0.ipv4.address }}
+        -ca=../ca/vault-agent-ca.pem
+        -key=../ca/vault-agent-ca-key.pem
+      args:
+        chdir: "{{ tls_vault_dir }}/{{ inventory_hostname }}"
+        creates: "{{ vault_region }}-server-vault-0-key.pem"
+  delegate_to: 127.0.0.1
