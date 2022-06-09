@@ -36,13 +36,10 @@
     - blmhemu.general.consul
     - blmhemu.general.dnsmasq
 
-# WIP
-# - name: Ready vault cluster
-#   hosts: vault_servers
-#   pre_tasks:
-#     - include_tasks: tasks/tls_vault.yml
-#   roles:
-#     - blmhemu.general.vault
+- name: Ready cni
+  hosts: nomad_clients
+  roles:
+    - blmhemu.general.cni
 
 - name: Ready nomad cluster
   hosts: nomad_instances
@@ -50,3 +47,11 @@
     - include_tasks: tasks/tls_nomad.yml
   roles:
     - blmhemu.general.nomad
+
+# WIP
+# - name: Ready vault cluster
+#   hosts: vault_servers
+#   pre_tasks:
+#     - include_tasks: tasks/tls_vault.yml
+#   roles:
+#     - blmhemu.general.vault
