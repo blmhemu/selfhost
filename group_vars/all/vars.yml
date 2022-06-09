@@ -14,10 +14,7 @@ docker_nonroot_users:
   - ubuntu
 
 # Tailscale
-# See vars.vault.yml
-
-# CNI
-cni_version: 1.1.1
+# tailscale_authkey: Encrypted in vars.vault.yml
 
 # TLS
 tls_base_dir: files/tls
@@ -28,12 +25,12 @@ tls_vault_dir: "{{ tls_base_dir }}/vault"
 # Consul
 consul_version: 1.12.2
 consul_datacenter: dc1
-# consul_encrypt_key in vars.vault.yml
 consul_bind_addr: "{{ '{{' }} GetInterfaceIP \\\"tailscale0\\\" {{ '}}' }}"
 consul_retry_join_interface: "ansible_tailscale0"
 consul_ca_src_file: "{{ tls_consul_dir }}/ca/consul-agent-ca.pem"
 consul_cert_src_file: "{{ tls_consul_dir }}/{{ inventory_hostname }}/{{ consul_datacenter }}-{{ consul_role }}-consul-0.pem"
 consul_key_src_file: "{{ tls_consul_dir }}/{{ inventory_hostname }}/{{ consul_datacenter }}-{{ consul_role }}-consul-0-key.pem"
+# consul_encrypt_key: Encrypted in vars.vault.yml
 
 # Dnsmasq
 dnsmasq_config: |
@@ -46,7 +43,6 @@ dnsmasq_config: |
   interface=lo
   interface=docker0
   bind-dynamic
-
 resolv_config: |
   nameserver 127.0.0.1
   nameserver {{ ansible_docker0.ipv4.address }}
@@ -57,6 +53,9 @@ vault_region: dc1
 vault_ca_src_file: "{{ tls_vault_dir }}/ca/vault-agent-ca.pem"
 vault_cert_src_file: "{{ tls_vault_dir }}/{{ inventory_hostname }}/{{ vault_region }}-server-vault-0.pem"
 vault_key_src_file: "{{ tls_vault_dir }}/{{ inventory_hostname }}/{{ vault_region }}-server-vault-0-key.pem"
+
+# CNI
+cni_version: 1.1.1
 
 # Nomad
 nomad_version: 1.3.1
@@ -71,47 +70,16 @@ nomad_key_src_file: "{{ tls_nomad_dir }}/{{ inventory_hostname }}/{{ nomad_regio
 nomad_consul_ca_src_file: "{{ tls_consul_dir }}/ca/consul-agent-ca.pem"
 nomad_consul_cert_src_file: "{{ tls_consul_dir }}/cli/{{ consul_datacenter }}-cli-consul-0.pem"
 nomad_consul_key_src_file: "{{ tls_consul_dir }}/cli/{{ consul_datacenter }}-cli-consul-0-key.pem"
-# nomad_telemetry_enable: true
 nomad_host_volumes:
-  # Traefik
-  - name: traefik
-    path: /mnt/neo/nomad/traefik
+  - name: seaweedfs
+    path: /mnt/neo/seaweedfs
+    owner: 1000
+    group: 1000
     read_only: false
-  # Nextcloud
-  - name: nextcloud_db
-    path: /mnt/neo/nomad/nextcloud/db
-    attr: +C # No COW is better for DBs
-    read_only: false
-  - name: nextcloud_data
-    path: /mnt/neo/nomad/nextcloud/data
-    read_only: false
-  # Koel
-  - name: koel_db
-    path: /mnt/neo/nomad/koel/db
-    attr: +C # No COW is better for DBs
-    read_only: false
-  - name: koel_music
-    path: /mnt/neo/nomad/koel/music
-    read_only: false
-  - name: koel_covers
-    path: /mnt/neo/nomad/koel/covers
-    read_only: false
-  - name: koel_search
-    path: /mnt/neo/nomad/koel/search
-    read_only: false
-  # Navidrome
-  - name: navidrome_music
-    path: /mnt/neo/nomad/navidrome/music
-    read_only: false
-  - name: navidrome_data
-    path: /mnt/neo/nomad/navidrome/data
-    read_only: false
-  - name: musicbrowser_config
-    path: /mnt/neo/nomad/navidrome/mbconfig
-    read_only: false
-  # Heimdall
-  - name: heimdall
-    path: /mnt/neo/nomad/heimdall
+  - name: filer_postgres
+    path: /mnt/neo/filer_postgres
+    owner: 1000
+    group: 1000
     read_only: false
 nomad_host_networks:
   - name: default
@@ -123,21 +91,4 @@ nomad_host_networks:
   - name: localhost
     cidr_or_interface: lo
     reserved_ports: [22]
-
-# NFS
-autofs_maps:
-  - name: nfs_nomad
-    mountpoint: /mnt/neo
-    options:
-      - "--timeout 60"
-    directories:
-      - path: nomad
-        server: "192.168.0.101:/mnt/neo/nomad" # TODO: Don't hardcode IP
-        options:
-          - fstype=nfs4
-          - rw
-          - hard
-          - intr
-          - nodev
-          - nosuid
-          - async
+# nomad_telemetry_enable: true

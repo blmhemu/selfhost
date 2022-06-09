@@ -1,8 +1,6 @@
 ---
 
-- name: Ready nomad cluster
-  hosts: nomad_instances
-  pre_tasks:
-    - include_tasks: tasks/tls_nomad.yml
-  roles:
-    - blmhemu.general.nomad
+- name: Ready storage
+  hosts: nas0
+  tasks:
+    - include_tasks: tasks/btrfs.yml

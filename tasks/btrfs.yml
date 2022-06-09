@@ -8,13 +8,13 @@
     update_cache: true
     force: false # Do not run if already exists
 
-# TODO: Label is hardcoded for now. Supports only single disk (no RAID)
+# TODO: Supports only single disk (no RAID)
 - name: Mkfs on the required disk
   become: true
   community.general.filesystem:
     fstype: btrfs
     dev: "{{ btrfs_disk }}"
-    opts: --label neo
+    opts: --label "{{ btrfs_label }}"
 
 - name: Mount and put in fstab
   become: true
@@ -28,6 +28,6 @@
 
 - name: Ensure subvols exist
   include_tasks: btrfs_subvols.yml
-  loop: "{{ btrfs_subvols }}"
+  loop: "{{ nomad_host_volumes }}"
   loop_control:
     label: "{{ item.name }}"

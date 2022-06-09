@@ -12,21 +12,10 @@
   tasks:
     - include_tasks: tasks/network-online.yml
 
-# NFS server and client
-- name: Ready NFS Server
+- name: Ready storage
   hosts: nas0
-  pre_tasks:
+  tasks:
     - include_tasks: tasks/btrfs.yml
-    - include_tasks: tasks/nfs_dirs.yml
-  roles:
-    - role: robertdebock.roles.nfsserver
-      become: true
-
-- name: Mount nfs on nomad clients
-  hosts: nomad_clients:!nas0
-  roles:
-    - role: robertdebock.roles.autofs
-      become: true
 
 - name: Ready consul cluster
   hosts: consul_instances

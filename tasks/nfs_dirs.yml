@@ -1,7 +1,0 @@
----
-
-- name: Ensure required dirs exists
-  include_tasks: safe_create.yml
-  with_items: "{{ nomad_host_volumes }}"
-  loop_control:
-    label: "{{ item.name }}"
