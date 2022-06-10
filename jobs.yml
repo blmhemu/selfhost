@@ -1,5 +1,37 @@
 ---
 
+- name: Deploy storage services
+  hosts: nomad_instances
+  vars_files: jobs/vars.vault.yml
+  tasks:
+    - name: Deploy nomad jobs
+      community.general.nomad_job:
+        host: "{{ ansible_default_ipv4.address }}"
+        use_ssl: true
+        validate_certs: false
+        client_cert: "files/tls/nomad/cli/global-cli-nomad-0.pem"
+        client_key: "files/tls/nomad/cli/global-cli-nomad-0-key.pem"
+        state: present
+        content: "{{ lookup('template', '{{ item }}') }}"
+        timeout: 120
+      with_fileglob:
+        - jobs/storage/*.nomad.j2
+        - jobs/storage/*.nomad
+      delegate_to: localhost
+      run_once: true
+
+- name: Deploy all volumes
+  hosts: nomad_instances
+  vars_files: jobs/vars.vault.yml
+  tasks:
+    - name: Deploy nomad volumes
+      ansible.builtin.shell: "source ./scripts/nomadenv.sh && cat {{ item }} | nomad volume create -"
+      with_fileglob:
+        - jobs/nextcloud/*.volume
+        - jobs/nextcloud/*.volume.j2
+      delegate_to: localhost
+      run_once: true
+
 - name: Deploy all jobs
   hosts: nomad_instances
   vars_files: jobs/vars.vault.yml
@@ -15,9 +47,7 @@
         content: "{{ lookup('template', '{{ item }}') }}"
         timeout: 120
       with_fileglob:
-        - jobs/*.nomad
-        - jobs/*.nomad.j2
-        # - jobs/development/*.nomad
-        # - jobs/development/*.nomad.j2
+        - jobs/apps/*.nomad
+        - jobs/apps/*.nomad.j2
       delegate_to: localhost
       run_once: true

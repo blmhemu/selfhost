@@ -19,7 +19,7 @@
         path: "{{ btrfs_mount_dir }}/{{ item.name }}"
         owner: "{{ item.owner }}"
         group: "{{ item.group }}"
-        mode: "{{ item.mode | default('0644') }}"
+        mode: "{{ item.mode | default('0755') }}"
         state: directory
   when:
     - not subvol_stat.stat.exists

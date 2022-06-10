@@ -5,12 +5,17 @@ job "seaweedfs" {
   datacenters = ["dc1"]
   type = "service"
 
+  # Master Group
   group "seaweedfs-master" {
     count = 1
 
     constraint {
       attribute = "${attr.unique.hostname}"
       operator  = "regexp"
+      # We need static IPs for master servers
+      # nas0 - xxx.xxx.xxx.xxx
+      # nas1 - yyy.yyy.yyy.yyy
+      # nas2 - zzz.zzz.zzz.zzz
       value     = "^nas0$"
     }
 
@@ -62,7 +67,7 @@ job "seaweedfs" {
           "-resumeState=false",
           "-ip=${NOMAD_IP_http}",
           "-port=${NOMAD_PORT_http}",
-          "-peers=192.168.0.101:${NOMAD_PORT_http}",
+          "-peers=${NOMAD_ADDR_http}",
           "-mdir=${NOMAD_TASK_DIR}/master"
         ]
       }
@@ -79,13 +84,14 @@ job "seaweedfs" {
         check {
           type = "tcp"
           port = "http"
-          interval = "30s"
-          timeout = "5s"
+          interval = "10s"
+          timeout = "2s"
         }
       }
     }
   }
 
+  # Volume Group
   group "seaweedfs-volume" {
     count = 1
 
@@ -126,6 +132,12 @@ job "seaweedfs" {
       }
     }
 
+    volume "seaweedfs-vol" {
+      type      = "host"
+      source    = "seaweedfs"
+      read_only = true
+    }
+
     task "seaweedfs-volume" {
       driver = "docker"
       user = "1000:1000"
@@ -146,23 +158,17 @@ job "seaweedfs" {
           "-preStopSeconds=1",
           "-dir=/data"
         ]
+      }
 
-        mounts = [
-            {
-                type = "bind"
-                source = "/mnt/neo/seaweedfs" # there should be directory in host VM
-                target = "/data"
-                readonly = false
-                bind_options = {
-                    propagation = "rprivate"
-                }
-            }
-         ]
+      volume_mount {
+        volume = "seaweedfs-vol"
+        destination = "/data"
+        read_only = false
       }
 
       resources {
         cpu = 512
-        memory = 1024
+        memory = 2048
         # memory_max = 4096 # W need to have memory oversubscription enabled
       }
 
@@ -173,8 +179,8 @@ job "seaweedfs" {
         check {
           type = "tcp"
           port = "http"
-          interval = "30s"
-          timeout = "5s"
+          interval = "10s"
+          timeout = "2s"
         }
       }
     }
@@ -183,6 +189,12 @@ job "seaweedfs" {
 
   group "seaweedfs-filer" {
     count = 1
+
+    constraint {
+      attribute = "${attr.unique.hostname}"
+      operator  = "regexp"
+      value     = "^nas0$"
+    }
 
     constraint {
       operator  = "distinct_hosts"
@@ -212,6 +224,12 @@ job "seaweedfs" {
       }
     }
 
+    volume "filer-vol" {
+      type = "host"
+      source = "filer"
+      read_only = false
+    }
+
     task "seaweedfs-filer" {
       driver = "docker"
       user = "1000:1000"
@@ -232,47 +250,27 @@ job "seaweedfs" {
           "-port=${NOMAD_PORT_http}",
           "-s3.port=${NOMAD_PORT_s3}"
         ]
-        mounts = [
-          {
-            type = "bind"
-            source = "local/filer.toml"
-            target = "/etc/seaweedfs/filer.toml"
-          }
-        ]
 
+        volumes = [
+          "local/filer.toml:/etc/seaweedfs/filer.toml"
+        ]
+      }
+
+      volume_mount {
+        volume = "filer-vol"
+        destination = "/datastore"
+        read_only = false
       }
 
       template {
         destination = "local/filer.toml"
         change_mode = "restart"
         data = <<EOH
-[postgres2]
+[leveldb2]
+# local on disk, mostly for simple single-machine setup, fairly scalable
+# faster than previous leveldb, recommended.
 enabled = true
-createTable = """
-  CREATE TABLE IF NOT EXISTS "%s" (
-    dirhash   BIGINT,
-    name      VARCHAR(65535),
-    directory VARCHAR(65535),
-    meta      bytea,
-    PRIMARY KEY (dirhash, name)
-  );
-"""
-hostname = "localhost"
-port = 5432
-username = "seaweedfs"
-password = "pass1234567"
-database = "seaweedfs"
-schema = ""
-sslmode = "disable"
-connection_max_idle = 100
-connection_max_open = 100
-connection_max_lifetime_seconds = 0
-enableUpsert = true
-upsertQuery = """INSERT INTO "%[1]s" (dirhash,name,directory,meta) VALUES($1,$2,$3,$4) ON CONFLICT (dirhash,name) DO UPDATE SET meta = EXCLUDED.meta WHERE "%[1]s".meta != EXCLUDED.meta"""
-
-# ssh ubuntu@172.21.100.54
-# sudo -u postgres psql -c "CREATE ROLE seaweedfs WITH PASSWORD 'pass1234567';"
-# sudo -u postgres psql -c "CREATE DATABASE seaweedfs OWNER seaweedfs;"
+dir = "/datastore/filerldb2" # directory to store level db files
 EOH
       }
 
@@ -288,8 +286,8 @@ EOH
         check {
           type = "tcp"
           port = "http"
-          interval = "30s"
-          timeout = "5s"
+          interval = "10s"
+          timeout = "2s"
         }
       }
 
@@ -300,44 +298,11 @@ EOH
         check {
           type = "tcp"
           port = "s3"
-          interval = "30s"
-          timeout = "5s"
+          interval = "10s"
+          timeout = "2s"
         }
       }
     }
-
-    task "postgres" {
-      driver = "docker"
-      user = "1000:1000"
-
-      config {
-        image = "postgres:14"
-        network_mode = "host"
-        mounts = [
-            {
-                type = "bind"
-                source = "/mnt/neo/postgres" # there should be directory in host VM
-                target = "/var/lib/postgresql/data"
-                readonly = false
-                bind_options = {
-                    propagation = "rprivate"
-                }
-            }
-         ]
-      }
-
-      env {
-        POSTGRES_DB       = "seaweedfs"
-        POSTGRES_USER     = "seaweedfs"
-        POSTGRES_PASSWORD = "pass1234567"
-      }
-
-      resources {
-        cpu    = 250
-        memory = 256
-      }
-    }
-
   }
 
 }

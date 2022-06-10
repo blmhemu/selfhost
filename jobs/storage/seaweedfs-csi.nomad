@@ -44,6 +44,7 @@ job "seaweedfs-csi" {
       resources {
         cpu    = 512
         memory = 1024
+        # memory_max = 3072 # W need to have memory oversubscription enabled
       }
     }
   }

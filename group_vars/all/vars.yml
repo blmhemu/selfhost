@@ -71,17 +71,6 @@ nomad_consul_ca_src_file: "{{ tls_consul_dir }}/ca/consul-agent-ca.pem"
 nomad_consul_cert_src_file: "{{ tls_consul_dir }}/cli/{{ consul_datacenter }}-cli-consul-0.pem"
 nomad_consul_key_src_file: "{{ tls_consul_dir }}/cli/{{ consul_datacenter }}-cli-consul-0-key.pem"
 nomad_docker_allow_privileged: true
-nomad_host_volumes:
-  - name: seaweedfs
-    path: /mnt/neo/seaweedfs
-    owner: 1000
-    group: 1000
-    read_only: false
-  - name: filer_postgres
-    path: /mnt/neo/filer_postgres
-    owner: 1000
-    group: 1000
-    read_only: false
 nomad_host_networks:
   - name: default
     cidr_or_interface: "{{ ansible_default_ipv4.interface }}"

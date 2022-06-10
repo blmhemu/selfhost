@@ -3,3 +3,16 @@
 btrfs_disk: /dev/disk/by-id/ata-ST6000VN0033-2EE110_ZAD9J1J4
 btrfs_label: neo
 btrfs_mount_dir: /mnt/{{ btrfs_label }}
+nomad_host_volumes:
+  - name: seaweedfs
+    path: /mnt/neo/seaweedfs
+    owner: 1000
+    group: 1000
+    mode: 755
+    read_only: false
+  - name: filer
+    path: /mnt/neo/filer
+    owner: 1000
+    group: 1000
+    mode: 755
+    read_only: false
