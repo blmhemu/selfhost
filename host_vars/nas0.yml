@@ -8,11 +8,7 @@ nomad_host_volumes:
     path: /mnt/neo/seaweedfs
     owner: 1000
     group: 1000
-    mode: 755
-    read_only: false
   - name: filer
     path: /mnt/neo/filer
     owner: 1000
     group: 1000
-    mode: 755
-    read_only: false

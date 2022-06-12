@@ -20,17 +20,17 @@
       delegate_to: localhost
       run_once: true
 
-- name: Deploy all volumes
-  hosts: nomad_instances
-  vars_files: jobs/vars.vault.yml
-  tasks:
-    - name: Deploy nomad volumes
-      ansible.builtin.shell: "source ./scripts/nomadenv.sh && cat {{ item }} | nomad volume create -"
-      with_fileglob:
-        - jobs/nextcloud/*.volume
-        - jobs/nextcloud/*.volume.j2
-      delegate_to: localhost
-      run_once: true
+# - name: Deploy all volumes
+#   hosts: nomad_instances
+#   vars_files: jobs/vars.vault.yml
+#   tasks:
+#     - name: Deploy nomad volumes
+#       ansible.builtin.shell: "source ./scripts/nomadenv.sh && cat {{ item }} | nomad volume create -"
+#       with_fileglob:
+#         - jobs/apps/*.volume
+#         - jobs/apps/*.volume.j2
+#       delegate_to: localhost
+#       run_once: true
 
 - name: Deploy all jobs
   hosts: nomad_instances

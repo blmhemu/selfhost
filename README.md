@@ -28,8 +28,21 @@ cat ~/.ssh/id_rsa.pub | ssh user@host "mkdir -p ~/.ssh && chmod 700 ~/.ssh && ca
 
 ```shell
 # Make sure gnu tar, consul, python-nomad are available on local machine (especially on MacOS)
-brew install gnu-tar consul
+brew install gnu-tar consul # Optionally nomad and vault
 pip3 install python-nomad
+```
+
+You can optionally change the shell to zsh for productivity during debugging sessions
+(Am lazy to automate this. Can be done though.)
+```
+# Install zsh
+sudo apt install zsh
+# Changelogin shell to zsh
+chsh -s $(which zsh)
+# Copy .zshrc
+scp misc/zshrc user@ip:~/.zshrc
+# Configure prompt
+p10k configure
 ```
 
 ## Transfer Install (Optional | Helios64)

@@ -132,10 +132,9 @@ job "seaweedfs" {
       }
     }
 
-    volume "seaweedfs-vol" {
+    volume "seaweedfs" {
       type      = "host"
       source    = "seaweedfs"
-      read_only = true
     }
 
     task "seaweedfs-volume" {
@@ -161,9 +160,8 @@ job "seaweedfs" {
       }
 
       volume_mount {
-        volume = "seaweedfs-vol"
+        volume = "seaweedfs"
         destination = "/data"
-        read_only = false
       }
 
       resources {
@@ -224,10 +222,9 @@ job "seaweedfs" {
       }
     }
 
-    volume "filer-vol" {
+    volume "filer" {
       type = "host"
       source = "filer"
-      read_only = false
     }
 
     task "seaweedfs-filer" {
@@ -257,9 +254,8 @@ job "seaweedfs" {
       }
 
       volume_mount {
-        volume = "filer-vol"
-        destination = "/datastore"
-        read_only = false
+        volume = "filer"
+        destination = "/data"
       }
 
       template {
@@ -270,7 +266,7 @@ job "seaweedfs" {
 # local on disk, mostly for simple single-machine setup, fairly scalable
 # faster than previous leveldb, recommended.
 enabled = true
-dir = "/datastore/filerldb2" # directory to store level db files
+dir = "/data/filerldb2" # directory to store level db files
 EOH
       }
 
